@@ -1,6 +1,6 @@
 package models;
 
-import java.util.Calendar;
+import java.util.Date;
 
 public class Review {
 
@@ -8,9 +8,9 @@ public class Review {
 	private int barber_shop_id;
 	private String description;
 	private double mark;
-	private Calendar date;
+	private Date date;
 
-	public Review(int client_id, int barber_shop_id, String description, double mark, Calendar date) {
+	public Review(int client_id, int barber_shop_id, String description, double mark, Date date) {
 		this.client_id = client_id;
 		this.barber_shop_id = barber_shop_id;
 		this.description = description;
@@ -50,11 +50,11 @@ public class Review {
 		this.mark = mark;
 	}
 
-	public Calendar getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(Calendar date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 }

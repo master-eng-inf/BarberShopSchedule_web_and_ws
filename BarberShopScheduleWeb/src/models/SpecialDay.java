@@ -1,14 +1,14 @@
 package models;
 
-import java.util.Calendar;
+import java.util.Date;
 
 public class SpecialDay {
 
 	private int barber_shop_id;
-	private Calendar date;
+	private Date date;
 	private int type;
 
-	public SpecialDay(int barber_shop_id, Calendar date, int type) {
+	public SpecialDay(int barber_shop_id, Date date, int type) {
 		this.barber_shop_id = barber_shop_id;
 		this.date = date;
 		this.type = type;
@@ -22,11 +22,11 @@ public class SpecialDay {
 		this.barber_shop_id = barber_shop_id;
 	}
 
-	public Calendar getDate() {
+	public Date getDate() {
 		return date;
 	}
 
-	public void setDate(Calendar date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 

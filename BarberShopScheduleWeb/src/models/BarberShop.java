@@ -7,14 +7,17 @@ public class BarberShop {
 	private String email;
 	private String telephone;
 	private String name;
+	private String address;
 	private String city;
-
-	public BarberShop(int id, String password, String email, String telephone, String name, String city) {
+	
+	public BarberShop(int id, String password, String email, String telephone, String name, String address,
+			String city) {
 		this.id = id;
 		this.password = password;
 		this.email = email;
 		this.telephone = telephone;
 		this.name = name;
+		this.address = address;
 		this.city = city;
 	}
 
@@ -64,5 +67,13 @@ public class BarberShop {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 }
