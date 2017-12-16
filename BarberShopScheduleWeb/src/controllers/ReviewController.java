@@ -26,7 +26,7 @@ public class ReviewController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/barberShop/{id}/list")
-	public List<Review> getReviewList(@PathParam("id") int id) {
+	public List<Review> getBarberShopReviewList(@PathParam("id") int id) {
 		ArrayList<Review> review_list = new ArrayList<>();
 
 		String strEstat = new String("ok");

@@ -26,7 +26,7 @@ public class ScheduleController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/barberShop/{id}/list")
-	public List<Schedule> getReviewList(@PathParam("id") int id) {
+	public List<Schedule> getBarberShopScheduleList(@PathParam("id") int id) {
 		ArrayList<Schedule> schedule_list = new ArrayList<>();
 
 		String strEstat = new String("ok");

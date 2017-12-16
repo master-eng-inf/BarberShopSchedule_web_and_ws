@@ -26,7 +26,7 @@ public class SpecialDayController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/barberShop/{id}/list")
-	public List<SpecialDay> getSpecialDayList(@PathParam("id") int id) {
+	public List<SpecialDay> getBarberShopSpecialDayList(@PathParam("id") int id) {
 		ArrayList<SpecialDay> specialDay_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
