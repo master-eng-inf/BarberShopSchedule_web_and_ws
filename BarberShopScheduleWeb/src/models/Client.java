@@ -20,6 +20,11 @@ public class Client {
 		this.age = age;
 	}
 
+	public Client()
+	{
+		
+	}
+	
 	public int getId() {
 		return id;
 	}

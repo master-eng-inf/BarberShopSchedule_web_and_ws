@@ -20,6 +20,11 @@ public class Appointment {
 		this.date = date;
 	}
 
+	public Appointment()
+	{
+		
+	}
+	
 	public int getId() {
 		return id;
 	}

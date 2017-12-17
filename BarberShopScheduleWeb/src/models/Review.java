@@ -18,6 +18,11 @@ public class Review {
 		this.date = date;
 	}
 
+	public Review()
+	{
+		
+	}
+	
 	public int getClient_id() {
 		return client_id;
 	}

@@ -16,6 +16,11 @@ public class Service {
 		this.duration = duration;
 	}
 
+	public Service()
+	{
+		
+	}
+	
 	public int getId() {
 		return id;
 	}

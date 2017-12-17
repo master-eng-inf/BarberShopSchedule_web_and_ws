@@ -5,10 +5,12 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import models.BarberShop;
+import models.Client;
 
 @RequestScoped
 @Path("barberShops")
@@ -70,7 +73,7 @@ public class BarberShopController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/barberShop/{id}")
 	public BarberShop getBarberShop(@PathParam("id") int id) {
-		
+
 		BarberShop barber_shop = null;
 
 		String strEstat = new String("ok");
@@ -106,5 +109,115 @@ public class BarberShopController {
 		}
 
 		return barber_shop;
+	}
+
+	@POST
+	@Path("/insertBarberShop")
+	@Consumes("application/json")
+	public Response insertBarberShop(BarberShop barberShop) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate(
+							"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values " + "("
+									+ barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
+									+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
+									+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
+									+ barberShop.getCity() + "')");
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/updateBarberShop")
+	@Consumes("application/json")
+	public Response updateBarberShop(BarberShop barberShop) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("UPDATE barbershop SET password = \'" + barberShop.getPassword()
+							+ "\', email = \'" + barberShop.getEmail() + "\', telephone = \'"
+							+ barberShop.getTelephone() + "\', name = \'" + barberShop.getName() + "\', address = '"
+							+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "' WHERE id = "
+							+ barberShop.getId());
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/deleteBarberShop/{id}")
+	public Response deleteBarberShop(@PathParam("id") int id) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("DELETE FROM barberShop WHERE id = " + id);
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
 	}
 }

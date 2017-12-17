@@ -1,4 +1,5 @@
 package controllers;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -10,10 +11,12 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import models.Client;
 
@@ -22,7 +25,7 @@ import models.Client;
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
 public class ClientController {
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list")
@@ -52,7 +55,6 @@ public class ClientController {
 					stm.close();
 				}
 			}
-
 		}
 
 		catch (Exception e) {
@@ -67,7 +69,7 @@ public class ClientController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/client/{id}")
 	public Client getClient(@PathParam("id") int id) {
-		
+
 		Client client = null;
 
 		String strEstat = new String("ok");
@@ -94,7 +96,6 @@ public class ClientController {
 					stm.close();
 				}
 			}
-
 		}
 
 		catch (Exception e) {
@@ -103,5 +104,112 @@ public class ClientController {
 		}
 
 		return client;
+	}
+
+	@POST
+	@Path("/insertClient")
+	@Consumes("application/json")
+	public Response insertClient(Client client) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("INSERT INTO client (id, password, email, telephone, name, gender, age) values "
+							+ "(" + client.getId() + ", '" + client.getPassword() + "','" + client.getEmail() + "','"
+							+ client.getTelephone() + "', '" + client.getName() + "'" + "," + client.getGender() + ", "
+							+ client.getAge() + ")");
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/updateClient")
+	@Consumes("application/json")
+	public Response updateClient(Client client) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("UPDATE client SET password = \'" + client.getPassword() + "\', email = \'"
+							+ client.getEmail() + "\', telephone = \'" + client.getTelephone() + "\', name = \'"
+							+ client.getName() + "\', gender = " + client.getGender() + ", age = " + client.getAge()
+							+ " WHERE id = " + client.getId());
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/deleteClient/{id}")
+	public Response deleteClient(@PathParam("id") int id) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("DELETE FROM client WHERE id = " + id);
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
 	}
 }

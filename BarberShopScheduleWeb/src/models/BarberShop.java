@@ -21,6 +21,11 @@ public class BarberShop {
 		this.city = city;
 	}
 
+	public BarberShop()
+	{
+		
+	}
+	
 	public int getId() {
 		return id;
 	}

@@ -1,4 +1,5 @@
 package controllers;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -10,10 +11,12 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import models.Promotion;
 
@@ -22,7 +25,7 @@ import models.Promotion;
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
 public class PromotionController {
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list")
@@ -67,7 +70,7 @@ public class PromotionController {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/promotion/{id}")
 	public Promotion getPromotion(@PathParam("id") int id) {
-		
+
 		Promotion promotion = null;
 
 		String strEstat = new String("ok");
@@ -103,5 +106,113 @@ public class PromotionController {
 		}
 
 		return promotion;
+	}
+
+	@POST
+	@Path("/insertPromotion")
+	@Consumes("application/json")
+	public Response insertPromotion(Promotion promotion) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate(
+							"INSERT INTO promotion (id, barber_shop_id, service_id, name, description, is_promotional) values "
+									+ "(" + promotion.getId() + ", " + promotion.getBarber_shop_id() + ", "
+									+ promotion.getService_id() + ", '" + promotion.getName() + "', '"
+									+ promotion.getDescription() + "', " + promotion.isIs_promotional() + ")");
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/updatePromotion")
+	@Consumes("application/json")
+	public Response updatePromotion(Promotion promotion) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("UPDATE promotion SET name = \'" + promotion.getName() + "\', barber_shop_id = "
+							+ promotion.getBarber_shop_id() + ", service_id = " + promotion.getService_id()
+							+ ", description = '" + promotion.getDescription() + "', is_promotional = "
+							+ promotion.isIs_promotional() + " WHERE id = " + promotion.getId());
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
+	}
+
+	@POST
+	@Path("/deletePromotion/{id}")
+	public Response deletePromotion(@PathParam("id") int id) {
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					stm.executeUpdate("DELETE FROM promotion WHERE id = " + id);
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to -> " + e.getMessage();
+		}
+
+		return Response.status(201).entity(strEstat).build();
 	}
 }

@@ -14,6 +14,11 @@ public class SpecialDay {
 		this.type = type;
 	}
 
+	public SpecialDay()
+	{
+		
+	}
+	
 	public int getBarber_shop_id() {
 		return barber_shop_id;
 	}

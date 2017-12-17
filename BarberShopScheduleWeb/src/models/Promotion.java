@@ -19,6 +19,11 @@ public class Promotion {
 		this.is_promotional = is_promotional;
 	}
 
+	public Promotion()
+	{
+		
+	}
+	
 	public int getId() {
 		return id;
 	}
