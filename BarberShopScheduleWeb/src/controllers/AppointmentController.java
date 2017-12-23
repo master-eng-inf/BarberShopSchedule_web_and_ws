@@ -28,8 +28,8 @@ public class AppointmentController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list")
-	public List<Appointment> getAppointmentList() {
+	@Path("/list/{token}")
+	public List<Appointment> getAppointmentList(@PathParam("token") String token) {
 		ArrayList<Appointment> appointment_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -45,12 +45,18 @@ public class AppointmentController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM appointment");
 
-					while (rs.next()) {
-						appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-								rs.getInt(5), rs.getDate(6)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment");
+
+						while (rs.next()) {
+							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+									rs.getInt(5), rs.getDate(6)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -68,8 +74,8 @@ public class AppointmentController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/appointment/{id}")
-	public Appointment getAppointment(@PathParam("id") int id) {
+	@Path("/appointment/{id}/{token}")
+	public Appointment getAppointment(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Appointment appointment = null;
 
@@ -86,12 +92,17 @@ public class AppointmentController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE id = " + id);
 
-					rs.next();
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
-					appointment = new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5),
-							rs.getDate(6));
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE id = " + id);
+
+						rs.next();
+
+						appointment = new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+								rs.getInt(5), rs.getDate(6));
+					}
 
 					connection.close();
 					stm.close();
@@ -109,9 +120,9 @@ public class AppointmentController {
 	}
 
 	@POST
-	@Path("/insertAppointment")
+	@Path("/insertAppointment/{token}")
 	@Consumes("application/json")
-	public Response insertAppointment(Appointment appointment) {
+	public Response insertAppointment(Appointment appointment, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -126,11 +137,16 @@ public class AppointmentController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate(
-							"INSERT INTO appointment (id, client_id, barber_shop_id, service_id, promotion_id, date) values "
-									+ "(" + appointment.getId() + ", " + appointment.getClient_id() + ", "
-									+ appointment.getBarber_shop_id() + ", " + appointment.getService_id() + ", "
-									+ appointment.getPromotion_id() + ", '" + appointment.getDate() + "')");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO appointment (id, client_id, barber_shop_id, service_id, promotion_id, date) values "
+										+ "(" + appointment.getId() + ", " + appointment.getClient_id() + ", "
+										+ appointment.getBarber_shop_id() + ", " + appointment.getService_id() + ", "
+										+ appointment.getPromotion_id() + ", '" + appointment.getDate() + "')");
+					}
 
 					connection.close();
 					stm.close();
@@ -147,8 +163,8 @@ public class AppointmentController {
 	}
 
 	@POST
-	@Path("/deleteAppointment/{id}")
-	public Response deleteAppointment(@PathParam("id") int id) {
+	@Path("/deleteAppointment/{id}/{token}")
+	public Response deleteAppointment(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -163,7 +179,12 @@ public class AppointmentController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM appointment WHERE id = " + id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM appointment WHERE id = " + id);
+					}
 
 					connection.close();
 					stm.close();

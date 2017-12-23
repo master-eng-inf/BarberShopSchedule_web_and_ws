@@ -31,8 +31,8 @@ public class BarberShopController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list")
-	public List<BarberShop> getBarberShopList() {
+	@Path("/list/{token}")
+	public List<BarberShop> getBarberShopList(@PathParam("token") String token) {
 		ArrayList<BarberShop> barber_shop_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -48,12 +48,18 @@ public class BarberShopController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM barbershop");
 
-					while (rs.next()) {
-						barber_shop_list.add(new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3),
-								rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM barbershop");
+
+						while (rs.next()) {
+							barber_shop_list.add(new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3),
+									rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -71,8 +77,8 @@ public class BarberShopController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/barberShop/{id}")
-	public BarberShop getBarberShop(@PathParam("id") int id) {
+	@Path("/barberShop/{id}/{token}")
+	public BarberShop getBarberShop(@PathParam("id") int id, @PathParam("token") String token) {
 
 		BarberShop barber_shop = null;
 
@@ -89,12 +95,18 @@ public class BarberShopController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM barbershop WHERE id = " + id);
 
-					rs.next();
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
-					barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-							rs.getString(5), rs.getString(6), rs.getString(7));
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM barbershop WHERE id = " + id);
+
+						rs.next();
+
+						barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+								rs.getString(5), rs.getString(6), rs.getString(7));
+
+					}
 
 					connection.close();
 					stm.close();
@@ -112,9 +124,9 @@ public class BarberShopController {
 	}
 
 	@POST
-	@Path("/insertBarberShop")
+	@Path("/insertBarberShop/{token}")
 	@Consumes("application/json")
-	public Response insertBarberShop(BarberShop barberShop) {
+	public Response insertBarberShop(BarberShop barberShop, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -129,12 +141,17 @@ public class BarberShopController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate(
-							"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values " + "("
-									+ barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
-									+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
-									+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
-									+ barberShop.getCity() + "')");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values "
+										+ "(" + barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
+										+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
+										+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
+										+ barberShop.getCity() + "')");
+					}
 
 					connection.close();
 					stm.close();
@@ -151,9 +168,9 @@ public class BarberShopController {
 	}
 
 	@POST
-	@Path("/updateBarberShop")
+	@Path("/updateBarberShop/{token}")
 	@Consumes("application/json")
-	public Response updateBarberShop(BarberShop barberShop) {
+	public Response updateBarberShop(BarberShop barberShop, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -168,11 +185,16 @@ public class BarberShopController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("UPDATE barbershop SET password = \'" + barberShop.getPassword()
-							+ "\', email = \'" + barberShop.getEmail() + "\', telephone = \'"
-							+ barberShop.getTelephone() + "\', name = \'" + barberShop.getName() + "\', address = '"
-							+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "' WHERE id = "
-							+ barberShop.getId());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("UPDATE barbershop SET password = \'" + barberShop.getPassword()
+								+ "\', email = \'" + barberShop.getEmail() + "\', telephone = \'"
+								+ barberShop.getTelephone() + "\', name = \'" + barberShop.getName() + "\', address = '"
+								+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "' WHERE id = "
+								+ barberShop.getId());
+					}
 
 					connection.close();
 					stm.close();
@@ -189,8 +211,8 @@ public class BarberShopController {
 	}
 
 	@POST
-	@Path("/deleteBarberShop/{id}")
-	public Response deleteBarberShop(@PathParam("id") int id) {
+	@Path("/deleteBarberShop/{id}/{token}")
+	public Response deleteBarberShop(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -205,7 +227,12 @@ public class BarberShopController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM barberShop WHERE id = " + id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM barberShop WHERE id = " + id);
+					}
 
 					connection.close();
 					stm.close();

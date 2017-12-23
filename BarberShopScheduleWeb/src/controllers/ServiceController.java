@@ -28,8 +28,8 @@ public class ServiceController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list")
-	public List<Service> getServiceList() {
+	@Path("/list/{token}")
+	public List<Service> getServiceList(@PathParam("token") String token) {
 		ArrayList<Service> service_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -45,12 +45,18 @@ public class ServiceController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM service");
 
-					while (rs.next()) {
-						service_list.add(new Service(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
-								rs.getInt(5)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM service");
+
+						while (rs.next()) {
+							service_list.add(new Service(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
+									rs.getInt(5)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -68,8 +74,8 @@ public class ServiceController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/service/{id}")
-	public Service getService(@PathParam("id") int id) {
+	@Path("/service/{id}/{token}")
+	public Service getService(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Service service = null;
 
@@ -86,11 +92,18 @@ public class ServiceController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM service WHERE id = " + id);
 
-					rs.next();
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
-					service = new Service(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4), rs.getInt(5));
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM service WHERE id = " + id);
+
+						rs.next();
+
+						service = new Service(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
+								rs.getInt(5));
+
+					}
 
 					connection.close();
 					stm.close();
@@ -108,9 +121,9 @@ public class ServiceController {
 	}
 
 	@POST
-	@Path("/insertService")
+	@Path("/insertService/{token}")
 	@Consumes("application/json")
-	public Response insertService(Service service) {
+	public Response insertService(Service service, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -125,9 +138,14 @@ public class ServiceController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("INSERT INTO service (id, barber_shop_id, name, price, duration) values " + "("
-							+ service.getId() + ", " + service.getBarber_shop_id() + ",'" + service.getName() + "',"
-							+ service.getPrice() + ", " + service.getDuration() + ")");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("INSERT INTO service (id, barber_shop_id, name, price, duration) values "
+								+ "(" + service.getId() + ", " + service.getBarber_shop_id() + ",'" + service.getName()
+								+ "'," + service.getPrice() + ", " + service.getDuration() + ")");
+					}
 
 					connection.close();
 					stm.close();
@@ -144,9 +162,9 @@ public class ServiceController {
 	}
 
 	@POST
-	@Path("/updateService")
+	@Path("/updateService/{token}")
 	@Consumes("application/json")
-	public Response updateService(Service service) {
+	public Response updateService(Service service, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -161,9 +179,14 @@ public class ServiceController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("UPDATE service SET name = \'" + service.getName() + "\', price = "
-							+ service.getPrice() + ", duration = " + service.getDuration() + ", barber_shop_id = "
-							+ service.getBarber_shop_id() + " WHERE id = " + service.getId());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("UPDATE service SET name = \'" + service.getName() + "\', price = "
+								+ service.getPrice() + ", duration = " + service.getDuration() + ", barber_shop_id = "
+								+ service.getBarber_shop_id() + " WHERE id = " + service.getId());
+					}
 
 					connection.close();
 					stm.close();
@@ -180,8 +203,8 @@ public class ServiceController {
 	}
 
 	@POST
-	@Path("/deleteService/{id}")
-	public Response deleteService(@PathParam("id") int id) {
+	@Path("/deleteService/{id}/{token}")
+	public Response deleteService(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -196,7 +219,12 @@ public class ServiceController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM service WHERE id = " + id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM service WHERE id = " + id);
+					}
 
 					connection.close();
 					stm.close();

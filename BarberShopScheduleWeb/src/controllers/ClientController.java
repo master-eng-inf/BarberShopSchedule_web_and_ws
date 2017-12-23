@@ -28,8 +28,8 @@ public class ClientController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list")
-	public List<Client> getClientList() {
+	@Path("/list/{token}")
+	public List<Client> getClientList(@PathParam("token") String token) {
 		ArrayList<Client> clients_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -45,12 +45,18 @@ public class ClientController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM client");
 
-					while (rs.next()) {
-						clients_list.add(new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-								rs.getString(5), rs.getInt(6), rs.getInt(7)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM client");
+
+						while (rs.next()) {
+							clients_list.add(new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+									rs.getString(5), rs.getInt(6), rs.getInt(7)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -67,8 +73,8 @@ public class ClientController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/client/{id}")
-	public Client getClient(@PathParam("id") int id) {
+	@Path("/client/{id}/{token}")
+	public Client getClient(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Client client = null;
 
@@ -85,12 +91,18 @@ public class ClientController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM client WHERE id = " + id);
 
-					rs.next();
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
-					client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-							rs.getString(5), rs.getInt(6), rs.getInt(7));
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM client WHERE id = " + id);
+
+						rs.next();
+
+						client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+								rs.getString(5), rs.getInt(6), rs.getInt(7));
+
+					}
 
 					connection.close();
 					stm.close();
@@ -107,9 +119,9 @@ public class ClientController {
 	}
 
 	@POST
-	@Path("/insertClient")
+	@Path("/insertClient/{token}")
 	@Consumes("application/json")
-	public Response insertClient(Client client) {
+	public Response insertClient(Client client, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -124,10 +136,16 @@ public class ClientController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("INSERT INTO client (id, password, email, telephone, name, gender, age) values "
-							+ "(" + client.getId() + ", '" + client.getPassword() + "','" + client.getEmail() + "','"
-							+ client.getTelephone() + "', '" + client.getName() + "'" + "," + client.getGender() + ", "
-							+ client.getAge() + ")");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO client (id, password, email, telephone, name, gender, age) values " + "("
+										+ client.getId() + ", '" + client.getPassword() + "','" + client.getEmail()
+										+ "','" + client.getTelephone() + "', '" + client.getName() + "'" + ","
+										+ client.getGender() + ", " + client.getAge() + ")");
+					}
 
 					connection.close();
 					stm.close();
@@ -144,9 +162,9 @@ public class ClientController {
 	}
 
 	@POST
-	@Path("/updateClient")
+	@Path("/updateClient/{token}")
 	@Consumes("application/json")
-	public Response updateClient(Client client) {
+	public Response updateClient(Client client, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -161,10 +179,15 @@ public class ClientController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("UPDATE client SET password = \'" + client.getPassword() + "\', email = \'"
-							+ client.getEmail() + "\', telephone = \'" + client.getTelephone() + "\', name = \'"
-							+ client.getName() + "\', gender = " + client.getGender() + ", age = " + client.getAge()
-							+ " WHERE id = " + client.getId());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("UPDATE client SET password = \'" + client.getPassword() + "\', email = \'"
+								+ client.getEmail() + "\', telephone = \'" + client.getTelephone() + "\', name = \'"
+								+ client.getName() + "\', gender = " + client.getGender() + ", age = " + client.getAge()
+								+ " WHERE id = " + client.getId());
+					}
 
 					connection.close();
 					stm.close();
@@ -181,8 +204,8 @@ public class ClientController {
 	}
 
 	@POST
-	@Path("/deleteClient/{id}")
-	public Response deleteClient(@PathParam("id") int id) {
+	@Path("/deleteClient/{id}/{token}")
+	public Response deleteClient(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -197,7 +220,12 @@ public class ClientController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM client WHERE id = " + id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM client WHERE id = " + id);
+					}
 
 					connection.close();
 					stm.close();

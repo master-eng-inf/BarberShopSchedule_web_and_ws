@@ -28,8 +28,8 @@ public class ScheduleController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/barberShop/{id}/list")
-	public List<Schedule> getBarberShopScheduleList(@PathParam("id") int id) {
+	@Path("/barberShop/{id}/list/{token}")
+	public List<Schedule> getBarberShopScheduleList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Schedule> schedule_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -45,12 +45,18 @@ public class ScheduleController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM schedule WHERE barber_shop_id = " + id);
 
-					while (rs.next()) {
-						schedule_list.add(new Schedule(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
-								rs.getString(5), rs.getString(6), rs.getInt(7)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM schedule WHERE barber_shop_id = " + id);
+
+						while (rs.next()) {
+							schedule_list.add(new Schedule(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+									rs.getString(5), rs.getString(6), rs.getInt(7)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -67,9 +73,9 @@ public class ScheduleController {
 	}
 
 	@POST
-	@Path("/insertSchedule")
+	@Path("/insertSchedule/{token}")
 	@Consumes("application/json")
-	public Response insertSchedule(Schedule schedule) {
+	public Response insertSchedule(Schedule schedule, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -84,12 +90,18 @@ public class ScheduleController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate(
-							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
-									+ "(" + schedule.getBarber_shop_id() + ", " + schedule.getDay_of_week() + ", '"
-									+ schedule.getOpening_1() + "', '" + schedule.getClosing_1() + "', '"
-									+ schedule.getOpening_2() + "', '" + schedule.getClosing_2() + "', "
-									+ schedule.getAppointments_at_same_time() + ")");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+										+ "(" + schedule.getBarber_shop_id() + ", " + schedule.getDay_of_week() + ", '"
+										+ schedule.getOpening_1() + "', '" + schedule.getClosing_1() + "', '"
+										+ schedule.getOpening_2() + "', '" + schedule.getClosing_2() + "', "
+										+ schedule.getAppointments_at_same_time() + ")");
+
+					}
 
 					connection.close();
 					stm.close();
@@ -106,9 +118,9 @@ public class ScheduleController {
 	}
 
 	@POST
-	@Path("/updateSchedule")
+	@Path("/updateSchedule/{token}")
 	@Consumes("application/json")
-	public Response updateSchedule(Schedule schedule) {
+	public Response updateSchedule(Schedule schedule, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -123,12 +135,17 @@ public class ScheduleController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate(
-							"UPDATE schedule SET opening_1 = \'" + schedule.getOpening_1() + "\', closing_1 = \'"
-									+ schedule.getClosing_1() + "', opening_2 = '" + schedule.getOpening_2()
-									+ "', closing_2 = '" + schedule.getClosing_2() + "', appointments_at_same_time = "
-									+ schedule.getAppointments_at_same_time() + " WHERE barber_shop_id = "
-									+ schedule.getBarber_shop_id() + " and day_of_week = " + schedule.getDay_of_week());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("UPDATE schedule SET opening_1 = \'" + schedule.getOpening_1()
+								+ "\', closing_1 = \'" + schedule.getClosing_1() + "', opening_2 = '"
+								+ schedule.getOpening_2() + "', closing_2 = '" + schedule.getClosing_2()
+								+ "', appointments_at_same_time = " + schedule.getAppointments_at_same_time()
+								+ " WHERE barber_shop_id = " + schedule.getBarber_shop_id() + " and day_of_week = "
+								+ schedule.getDay_of_week());
+					}
 
 					connection.close();
 					stm.close();

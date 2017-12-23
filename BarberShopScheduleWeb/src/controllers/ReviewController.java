@@ -29,8 +29,8 @@ public class ReviewController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/barberShop/{id}/list")
-	public List<Review> getBarberShopReviewList(@PathParam("id") int id) {
+	@Path("/barberShop/{id}/list/{token}")
+	public List<Review> getBarberShopReviewList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Review> review_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -46,12 +46,18 @@ public class ReviewController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM review WHERE barber_shop_id = " + id);
 
-					while (rs.next()) {
-						review_list.add(new Review(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
-								rs.getDate(5)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM review WHERE barber_shop_id = " + id);
+
+						while (rs.next()) {
+							review_list.add(new Review(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
+									rs.getDate(5)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -68,9 +74,9 @@ public class ReviewController {
 	}
 
 	@POST
-	@Path("/insertReview")
+	@Path("/insertReview/{token}")
 	@Consumes("application/json")
-	public Response insertReview(Review review) {
+	public Response insertReview(Review review, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -85,9 +91,16 @@ public class ReviewController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("INSERT INTO review (client_id, barber_shop_id, description, mark, date) values "
-							+ "(" + review.getClient_id() + ", " + review.getBarber_shop_id() + ",'"
-							+ review.getDescription() + "'," + review.getMark() + ", '" + review.getDate() + "')");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO review (client_id, barber_shop_id, description, mark, date) values " + "("
+										+ review.getClient_id() + ", " + review.getBarber_shop_id() + ",'"
+										+ review.getDescription() + "'," + review.getMark() + ", '" + review.getDate()
+										+ "')");
+					}
 
 					connection.close();
 					stm.close();
@@ -104,9 +117,9 @@ public class ReviewController {
 	}
 
 	@POST
-	@Path("/updateReview")
+	@Path("/updateReview/{token}")
 	@Consumes("application/json")
-	public Response updateReview(Review review) {
+	public Response updateReview(Review review, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -121,9 +134,14 @@ public class ReviewController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("UPDATE review SET description = \'" + review.getDescription() + "\', mark = "
-							+ review.getMark() + ", date = \'" + review.getDate() + "\' WHERE client_id = "
-							+ review.getClient_id() + " and barber_shop_id = " + review.getBarber_shop_id());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("UPDATE review SET description = \'" + review.getDescription() + "\', mark = "
+								+ review.getMark() + ", date = \'" + review.getDate() + "\' WHERE client_id = "
+								+ review.getClient_id() + " and barber_shop_id = " + review.getBarber_shop_id());
+					}
 
 					connection.close();
 					stm.close();
@@ -140,8 +158,9 @@ public class ReviewController {
 	}
 
 	@POST
-	@Path("/deleteReview/client_id/{client_id}/barber_shop_id/{barber_shop_id}")
-	public Response deleteReview(@PathParam("client_id") int client_id, @PathParam("barber_shop_id") int barber_shop_id) {
+	@Path("/deleteReview/client_id/{client_id}/barber_shop_id/{barber_shop_id}/{token}")
+	public Response deleteReview(@PathParam("client_id") int client_id, @PathParam("barber_shop_id") int barber_shop_id,
+			@PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -156,7 +175,13 @@ public class ReviewController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM review WHERE client_id = " + client_id + " and barber_sop_id = " + barber_shop_id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM review WHERE client_id = " + client_id + " and barber_sop_id = "
+								+ barber_shop_id);
+					}
 
 					connection.close();
 					stm.close();

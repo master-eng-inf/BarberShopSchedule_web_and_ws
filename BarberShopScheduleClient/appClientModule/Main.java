@@ -10,12 +10,43 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 			
-		//insertClient();
-		//deleteClient();
-		//updateClient();
-		insertAppointment();
+		String token = "1c0e5925bc4b4ca2853a629b93072392";
+		
+		//insertClient(token);
+		//deleteClient(token);
+		//updateClient(token);
+		//insertAppointment(token);
+		
+		logout(9, token);
 	}
 
+	private static void logout(int id, String token)
+	{
+		try {
+
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/sessions/logout/"+id+"/" + token);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Answer: "+ output);
+			}
+
+			conn.disconnect();
+
+		  } 
+	  catch (MalformedURLException e) {e.printStackTrace();}
+	  catch (IOException e) {e.printStackTrace(); }
+	}
+	
 	private static void insertAppointment()
 	{
 		try {
@@ -51,11 +82,11 @@ public class Main {
 	  catch (IOException e) {e.printStackTrace(); }
 	}
 	
-	private static void deleteClient()
+	private static void deleteClient(String token)
 	{
 		try {
 
-			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/deleteClient/10");
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/deleteClient/7/" + token);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");

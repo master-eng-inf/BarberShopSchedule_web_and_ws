@@ -28,8 +28,8 @@ public class PromotionController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/list")
-	public List<Promotion> getPromotionList() {
+	@Path("/list/{token}")
+	public List<Promotion> getPromotionList(@PathParam("token") String token) {
 		ArrayList<Promotion> promotion_list = new ArrayList<>();
 
 		String strEstat = new String("ok");
@@ -45,12 +45,18 @@ public class PromotionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM promotion");
 
-					while (rs.next()) {
-						promotion_list.add(new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
-								rs.getString(5), rs.getBoolean(6)));
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM promotion");
+
+						while (rs.next()) {
+							promotion_list.add(new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
+									rs.getString(5), rs.getBoolean(6)));
+						}
 					}
+
 					connection.close();
 					stm.close();
 				}
@@ -68,8 +74,8 @@ public class PromotionController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/promotion/{id}")
-	public Promotion getPromotion(@PathParam("id") int id) {
+	@Path("/promotion/{id}/{token}")
+	public Promotion getPromotion(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Promotion promotion = null;
 
@@ -86,12 +92,17 @@ public class PromotionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM promotion WHERE id = " + id);
 
-					rs.next();
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
-					promotion = new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
-							rs.getString(5), rs.getBoolean(6));
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM promotion WHERE id = " + id);
+
+						rs.next();
+
+						promotion = new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
+								rs.getString(5), rs.getBoolean(6));
+					}
 
 					connection.close();
 					stm.close();
@@ -109,9 +120,9 @@ public class PromotionController {
 	}
 
 	@POST
-	@Path("/insertPromotion")
+	@Path("/insertPromotion/{token}")
 	@Consumes("application/json")
-	public Response insertPromotion(Promotion promotion) {
+	public Response insertPromotion(Promotion promotion, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -126,11 +137,16 @@ public class PromotionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate(
-							"INSERT INTO promotion (id, barber_shop_id, service_id, name, description, is_promotional) values "
-									+ "(" + promotion.getId() + ", " + promotion.getBarber_shop_id() + ", "
-									+ promotion.getService_id() + ", '" + promotion.getName() + "', '"
-									+ promotion.getDescription() + "', " + promotion.isIs_promotional() + ")");
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"INSERT INTO promotion (id, barber_shop_id, service_id, name, description, is_promotional) values "
+										+ "(" + promotion.getId() + ", " + promotion.getBarber_shop_id() + ", "
+										+ promotion.getService_id() + ", '" + promotion.getName() + "', '"
+										+ promotion.getDescription() + "', " + promotion.isIs_promotional() + ")");
+					}
 
 					connection.close();
 					stm.close();
@@ -147,9 +163,9 @@ public class PromotionController {
 	}
 
 	@POST
-	@Path("/updatePromotion")
+	@Path("/updatePromotion/{token}")
 	@Consumes("application/json")
-	public Response updatePromotion(Promotion promotion) {
+	public Response updatePromotion(Promotion promotion, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -164,10 +180,16 @@ public class PromotionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("UPDATE promotion SET name = \'" + promotion.getName() + "\', barber_shop_id = "
-							+ promotion.getBarber_shop_id() + ", service_id = " + promotion.getService_id()
-							+ ", description = '" + promotion.getDescription() + "', is_promotional = "
-							+ promotion.isIs_promotional() + " WHERE id = " + promotion.getId());
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate(
+								"UPDATE promotion SET name = \'" + promotion.getName() + "\', barber_shop_id = "
+										+ promotion.getBarber_shop_id() + ", service_id = " + promotion.getService_id()
+										+ ", description = '" + promotion.getDescription() + "', is_promotional = "
+										+ promotion.isIs_promotional() + " WHERE id = " + promotion.getId());
+					}
 
 					connection.close();
 					stm.close();
@@ -184,8 +206,8 @@ public class PromotionController {
 	}
 
 	@POST
-	@Path("/deletePromotion/{id}")
-	public Response deletePromotion(@PathParam("id") int id) {
+	@Path("/deletePromotion/{id}/{token}")
+	public Response deletePromotion(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -200,7 +222,12 @@ public class PromotionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					stm.executeUpdate("DELETE FROM promotion WHERE id = " + id);
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						stm.executeUpdate("DELETE FROM promotion WHERE id = " + id);
+					}
 
 					connection.close();
 					stm.close();
