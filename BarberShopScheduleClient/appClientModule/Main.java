@@ -10,14 +10,14 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 			
-		String token = "1c0e5925bc4b4ca2853a629b93072392";
+		String token = "61a7a2afb22b47a09b93eceaf67c9525";
 		
-		//insertClient(token);
+		insertClient(token);
 		//deleteClient(token);
 		//updateClient(token);
 		//insertAppointment(token);
 		
-		logout(9, token);
+		//logout(9, token);
 	}
 
 	private static void logout(int id, String token)
@@ -109,17 +109,17 @@ public class Main {
 	  catch (IOException e) {e.printStackTrace(); }
 	}
 	
-	private static void insertClient()
+	private static void insertClient(String token)
 	{
 		try {
 
-			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/insertClient");
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/insertClient/"+token);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 
-			String input = "{\"id\":10,\"password\":\"5\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
+			String input = "{\"id\":14,\"password\":\"5\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
 					+ ",\"name\":\"Client 5\",\"gender\":1,\"age\":10}";
 
 			OutputStream os = conn.getOutputStream();
