@@ -119,9 +119,9 @@ public class ClientController {
 	}
 
 	@POST
-	@Path("/insertClient/{token}")
+	@Path("/insertClient")
 	@Consumes("application/json")
-	public Response insertClient(Client client, @PathParam("token") String token) {
+	public Response insertClient(Client client) {
 
 		String strEstat = new String("ok");
 
@@ -137,15 +137,10 @@ public class ClientController {
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
 
-					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
-
-					if (session.next()) {
-						stm.executeUpdate(
-								"INSERT INTO client (id, password, email, telephone, name, gender, age) values " + "("
-										+ client.getId() + ", '" + client.getPassword() + "','" + client.getEmail()
-										+ "','" + client.getTelephone() + "', '" + client.getName() + "'" + ","
-										+ client.getGender() + ", " + client.getAge() + ")");
-					}
+					stm.executeUpdate("INSERT INTO client (id, password, email, telephone, name, gender, age) values "
+							+ "(" + client.getId() + ", '" + client.getPassword() + "','" + client.getEmail() + "','"
+							+ client.getTelephone() + "', '" + client.getName() + "'" + "," + client.getGender() + ", "
+							+ client.getAge() + ")");
 
 					connection.close();
 					stm.close();

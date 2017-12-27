@@ -56,7 +56,7 @@ public class BarberShopController {
 
 						while (rs.next()) {
 							barber_shop_list.add(new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3),
-									rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7)));
+									rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9)));
 						}
 					}
 
@@ -104,7 +104,7 @@ public class BarberShopController {
 						rs.next();
 
 						barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-								rs.getString(5), rs.getString(6), rs.getString(7));
+								rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
 
 					}
 
@@ -124,9 +124,9 @@ public class BarberShopController {
 	}
 
 	@POST
-	@Path("/insertBarberShop/{token}")
+	@Path("/insertBarberShop")
 	@Consumes("application/json")
-	public Response insertBarberShop(BarberShop barberShop, @PathParam("token") String token) {
+	public Response insertBarberShop(BarberShop barberShop) {
 
 		String strEstat = new String("ok");
 
@@ -142,16 +142,12 @@ public class BarberShopController {
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
 
-					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
-
-					if (session.next()) {
-						stm.executeUpdate(
-								"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values "
-										+ "(" + barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
-										+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
-										+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
-										+ barberShop.getCity() + "')");
-					}
+					stm.executeUpdate(
+							"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values " + "("
+									+ barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
+									+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
+									+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
+									+ barberShop.getCity() + "')");
 
 					connection.close();
 					stm.close();

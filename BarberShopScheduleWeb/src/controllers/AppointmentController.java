@@ -74,6 +74,98 @@ public class AppointmentController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/barberShop/{id}/{token}")
+	public List<Appointment> getBarberShopAppointmentList(@PathParam("id") int id, @PathParam("token") String token) {
+		ArrayList<Appointment> appointment_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE barber_shop_id = " + id);
+
+						while (rs.next()) {
+							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+									rs.getInt(5), rs.getDate(6)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return appointment_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/client/{id}/{token}")
+	public List<Appointment> getClientAppointmentList(@PathParam("id") int id, @PathParam("token") String token) {
+		ArrayList<Appointment> appointment_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE client_id = " + id);
+
+						while (rs.next()) {
+							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+									rs.getInt(5), rs.getDate(6)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return appointment_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/appointment/{id}/{token}")
 	public Appointment getAppointment(@PathParam("id") int id, @PathParam("token") String token) {
 

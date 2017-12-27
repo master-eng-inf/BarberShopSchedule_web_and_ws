@@ -74,6 +74,98 @@ public class PromotionController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/promotional/list/{token}")
+	public List<Promotion> getPromotionalPromotionList(@PathParam("token") String token) {
+		ArrayList<Promotion> promotion_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM promotion WHERE is_promotional = " + true);
+
+						while (rs.next()) {
+							promotion_list.add(new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
+									rs.getString(5), rs.getBoolean(6)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return promotion_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/barberShop/{id}/{token}")
+	public List<Promotion> getBarberShopPromotionList(@PathParam("id") int id, @PathParam("token") String token) {
+		ArrayList<Promotion> promotion_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM promotion WHERE barber_shop_id = " + id);
+
+						while (rs.next()) {
+							promotion_list.add(new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
+									rs.getString(5), rs.getBoolean(6)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return promotion_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/promotion/{id}/{token}")
 	public Promotion getPromotion(@PathParam("id") int id, @PathParam("token") String token) {
 

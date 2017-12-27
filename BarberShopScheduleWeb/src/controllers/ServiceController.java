@@ -74,6 +74,52 @@ public class ServiceController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/barberShop/{id}/{token}")
+	public List<Service> getBarberShopServiceList(@PathParam("id") int id, @PathParam("token") String token) {
+		ArrayList<Service> service_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM service WHERE barber_shop_id = " + id);
+
+						while (rs.next()) {
+							service_list.add(new Service(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
+									rs.getInt(5)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return service_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/service/{id}/{token}")
 	public Service getService(@PathParam("id") int id, @PathParam("token") String token) {
 
