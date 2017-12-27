@@ -11,9 +11,10 @@ public class BarberShop {
 	private String city;
 	private String description;
 	private String places_id;
+	private int gender;
 	
 	public BarberShop(int id, String password, String email, String telephone, String name, String address,
-			String city, String description, String places_id) {
+			String city, String description, String places_id, int gender) {
 		this.id = id;
 		this.password = password;
 		this.email = email;
@@ -23,6 +24,7 @@ public class BarberShop {
 		this.city = city;
 		this.description = description;
 		this.places_id = places_id;
+		this.gender = gender;
 	}
 
 	public BarberShop()
@@ -100,5 +102,13 @@ public class BarberShop {
 
 	public void setPlaces_id(String places_id) {
 		this.places_id = places_id;
+	}
+
+	public int getGender() {
+		return gender;
+	}
+
+	public void setGender(int gender) {
+		this.gender = gender;
 	}
 }

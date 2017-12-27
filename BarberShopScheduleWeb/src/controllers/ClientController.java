@@ -119,12 +119,15 @@ public class ClientController {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertClient")
 	@Consumes("application/json")
-	public Response insertClient(Client client) {
+	public int insertClient(Client client) {
 
 		String strEstat = new String("ok");
 
+		int last_inserted_id = -1;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -137,11 +140,15 @@ public class ClientController {
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
 
-					stm.executeUpdate("INSERT INTO client (id, password, email, telephone, name, gender, age) values "
-							+ "(" + client.getId() + ", '" + client.getPassword() + "','" + client.getEmail() + "','"
+					ResultSet rs = stm.executeQuery("INSERT INTO client (password, email, telephone, name, gender, age) values "
+							+ "('" + client.getPassword() + "','" + client.getEmail() + "','"
 							+ client.getTelephone() + "', '" + client.getName() + "'" + "," + client.getGender() + ", "
-							+ client.getAge() + ")");
+							+ client.getAge() + ") RETURNING id");
 
+					rs.next();
+					
+					last_inserted_id = rs.getInt(1);
+					
 					connection.close();
 					stm.close();
 				}
@@ -153,7 +160,7 @@ public class ClientController {
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
 
-		return Response.status(201).entity(strEstat).build();
+		return last_inserted_id;
 	}
 
 	@POST

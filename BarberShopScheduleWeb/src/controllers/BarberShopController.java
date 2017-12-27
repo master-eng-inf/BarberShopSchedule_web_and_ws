@@ -56,7 +56,8 @@ public class BarberShopController {
 
 						while (rs.next()) {
 							barber_shop_list.add(new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3),
-									rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9)));
+									rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
+									rs.getString(9), rs.getInt(10)));
 						}
 					}
 
@@ -104,7 +105,7 @@ public class BarberShopController {
 						rs.next();
 
 						barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-								rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9));
+								rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getInt(10));
 
 					}
 
@@ -124,12 +125,15 @@ public class BarberShopController {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertBarberShop")
 	@Consumes("application/json")
-	public Response insertBarberShop(BarberShop barberShop) {
+	public int insertBarberShop(BarberShop barberShop) {
 
 		String strEstat = new String("ok");
 
+		int last_inserted_id = -1;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -142,12 +146,17 @@ public class BarberShopController {
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
 
-					stm.executeUpdate(
-							"INSERT INTO barbershop (id, password, email, telephone, name, address, city) values " + "("
-									+ barberShop.getId() + ", '" + barberShop.getPassword() + "', '"
-									+ barberShop.getEmail() + "', '" + barberShop.getTelephone() + "', '"
-									+ barberShop.getName() + "'" + ", '" + barberShop.getAddress() + "', '"
-									+ barberShop.getCity() + "')");
+					ResultSet rs = stm.executeQuery(
+							"INSERT INTO barbershop (password, email, telephone, name, address, city, description, places_id) values "
+									+ "('" + barberShop.getPassword() + "', '" + barberShop.getEmail() + "', '"
+									+ barberShop.getTelephone() + "', '" + barberShop.getName() + "'" + ", '"
+									+ barberShop.getAddress() + "', '" + barberShop.getCity() + "', '"
+									+ barberShop.getDescription() + "', '" + barberShop.getPlaces_id()
+									+ "') RETURNING id");
+
+					rs.next();
+
+					last_inserted_id = rs.getInt(1);
 
 					connection.close();
 					stm.close();
@@ -160,7 +169,7 @@ public class BarberShopController {
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
 
-		return Response.status(201).entity(strEstat).build();
+		return last_inserted_id;
 	}
 
 	@POST
@@ -188,8 +197,9 @@ public class BarberShopController {
 						stm.executeUpdate("UPDATE barbershop SET password = \'" + barberShop.getPassword()
 								+ "\', email = \'" + barberShop.getEmail() + "\', telephone = \'"
 								+ barberShop.getTelephone() + "\', name = \'" + barberShop.getName() + "\', address = '"
-								+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "' WHERE id = "
-								+ barberShop.getId());
+								+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "', description = '"
+								+ barberShop.getDescription() + "', places_id = '" + barberShop.getPlaces_id()
+								+ "' WHERE id = " + barberShop.getId());
 					}
 
 					connection.close();

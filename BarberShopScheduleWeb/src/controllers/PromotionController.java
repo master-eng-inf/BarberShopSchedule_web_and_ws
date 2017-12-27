@@ -117,7 +117,7 @@ public class PromotionController {
 
 		return promotion_list;
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list/barberShop/{id}/{token}")
@@ -163,7 +163,7 @@ public class PromotionController {
 
 		return promotion_list;
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/promotion/{id}/{token}")
@@ -212,11 +212,14 @@ public class PromotionController {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertPromotion/{token}")
 	@Consumes("application/json")
-	public Response insertPromotion(Promotion promotion, @PathParam("token") String token) {
+	public int insertPromotion(Promotion promotion, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
+
+		int last_inserted_id = -1;
 
 		try {
 			InitialContext cxt = new InitialContext();
@@ -233,11 +236,15 @@ public class PromotionController {
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
-						stm.executeUpdate(
-								"INSERT INTO promotion (id, barber_shop_id, service_id, name, description, is_promotional) values "
-										+ "(" + promotion.getId() + ", " + promotion.getBarber_shop_id() + ", "
-										+ promotion.getService_id() + ", '" + promotion.getName() + "', '"
-										+ promotion.getDescription() + "', " + promotion.isIs_promotional() + ")");
+						ResultSet rs = stm.executeQuery(
+								"INSERT INTO promotion (barber_shop_id, service_id, name, description, is_promotional) values "
+										+ "(" + promotion.getBarber_shop_id() + ", " + promotion.getService_id() + ", '"
+										+ promotion.getName() + "', '" + promotion.getDescription() + "', "
+										+ promotion.isIs_promotional() + ") RETURNING id");
+
+						rs.next();
+
+						last_inserted_id = rs.getInt(1);
 					}
 
 					connection.close();
@@ -251,7 +258,7 @@ public class PromotionController {
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
 
-		return Response.status(201).entity(strEstat).build();
+		return last_inserted_id;
 	}
 
 	@POST

@@ -12,7 +12,7 @@ public class Main {
 			
 		String token = "61a7a2afb22b47a09b93eceaf67c9525";
 		
-		insertClient(token);
+		insertClient();
 		//deleteClient(token);
 		//updateClient(token);
 		//insertAppointment(token);
@@ -109,27 +109,29 @@ public class Main {
 	  catch (IOException e) {e.printStackTrace(); }
 	}
 	
-	private static void insertClient(String token)
+	private static void insertClient()
 	{
 		try {
 
-			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/insertClient/"+token);
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/clients/insertClient");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 
-			String input = "{\"id\":14,\"password\":\"5\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
+			String input = "{\"password\":\"holaquetal\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
 					+ ",\"name\":\"Client 5\",\"gender\":1,\"age\":10}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
 			os.flush();
 
+			/*
 			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
 				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
 			}
-
+			*/
+			
 			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
 			String output;

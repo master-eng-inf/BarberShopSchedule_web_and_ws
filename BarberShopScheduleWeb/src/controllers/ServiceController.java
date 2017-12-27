@@ -117,7 +117,7 @@ public class ServiceController {
 
 		return service_list;
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/service/{id}/{token}")
@@ -167,11 +167,14 @@ public class ServiceController {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertService/{token}")
 	@Consumes("application/json")
-	public Response insertService(Service service, @PathParam("token") String token) {
+	public int insertService(Service service, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
+
+		int last_inserted_id = -1;
 
 		try {
 			InitialContext cxt = new InitialContext();
@@ -188,9 +191,14 @@ public class ServiceController {
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
-						stm.executeUpdate("INSERT INTO service (id, barber_shop_id, name, price, duration) values "
-								+ "(" + service.getId() + ", " + service.getBarber_shop_id() + ",'" + service.getName()
-								+ "'," + service.getPrice() + ", " + service.getDuration() + ")");
+						ResultSet rs = stm
+								.executeQuery("INSERT INTO service (barber_shop_id, name, price, duration) values "
+										+ "(" + service.getBarber_shop_id() + ",'" + service.getName() + "',"
+										+ service.getPrice() + ", " + service.getDuration() + ") RETURNING id");
+
+						rs.next();
+
+						last_inserted_id = rs.getInt(1);
 					}
 
 					connection.close();
@@ -204,7 +212,7 @@ public class ServiceController {
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
 
-		return Response.status(201).entity(strEstat).build();
+		return last_inserted_id;
 	}
 
 	@POST
