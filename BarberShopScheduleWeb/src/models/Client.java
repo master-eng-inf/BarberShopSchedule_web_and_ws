@@ -9,6 +9,7 @@ public class Client {
 	private String name;
 	private int gender;
 	private int age;
+	private String token;
 
 	public Client(int id, String password, String email, String telephone, String name, int gender, int age) {
 		this.id = id;
@@ -79,5 +80,13 @@ public class Client {
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

@@ -13,6 +13,9 @@ public class Main {
 		String token = "61a7a2afb22b47a09b93eceaf67c9525";
 		
 		insertClient();
+		
+		//insertBarberShop();
+		
 		//deleteClient(token);
 		//updateClient(token);
 		//insertAppointment(token);
@@ -119,8 +122,45 @@ public class Main {
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 
-			String input = "{\"password\":\"holaquetal\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
-					+ ",\"name\":\"Client 5\",\"gender\":1,\"age\":10}";
+			String input = "{\"password\":\"pass\",\"email\":\"5@gmail.com\",\"telephone\":\"555-555-555\""
+					+ ",\"name\":\"Alex\",\"gender\":1,\"age\":10}";
+
+			OutputStream os = conn.getOutputStream();
+			os.write(input.getBytes());
+			os.flush();
+
+			/*
+			if (conn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+				throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+			}
+			*/
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Answer: "+ output);
+			}
+
+			conn.disconnect();
+
+		  } 
+	  catch (MalformedURLException e) {e.printStackTrace();}
+	  catch (IOException e) {e.printStackTrace(); }
+	}
+	
+	private static void insertBarberShop()
+	{
+		try {
+
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/insertBarberShop");
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+
+			String input = "{\"password\":\"pass\",\"email\":\"1@gmail.com\",\"telephone\":\"111 111 111\""
+					+ ",\"name\":\"AlexBarber2\",\"address\":\"2\",\"city\":\"2\",\"description\":\"d\",\"places_id\":\"placeId\",\"gender\":1}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());

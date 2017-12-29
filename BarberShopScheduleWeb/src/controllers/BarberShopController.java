@@ -105,7 +105,8 @@ public class BarberShopController {
 						rs.next();
 
 						barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
-								rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getInt(10));
+								rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
+								rs.getInt(10));
 
 					}
 
@@ -133,7 +134,7 @@ public class BarberShopController {
 		String strEstat = new String("ok");
 
 		int last_inserted_id = -1;
-		
+
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -147,12 +148,12 @@ public class BarberShopController {
 					Statement stm = connection.createStatement();
 
 					ResultSet rs = stm.executeQuery(
-							"INSERT INTO barbershop (password, email, telephone, name, address, city, description, places_id) values "
+							"INSERT INTO barbershop (password, email, telephone, name, address, city, description, places_id, gender) values "
 									+ "('" + barberShop.getPassword() + "', '" + barberShop.getEmail() + "', '"
 									+ barberShop.getTelephone() + "', '" + barberShop.getName() + "'" + ", '"
 									+ barberShop.getAddress() + "', '" + barberShop.getCity() + "', '"
-									+ barberShop.getDescription() + "', '" + barberShop.getPlaces_id()
-									+ "') RETURNING id");
+									+ barberShop.getDescription() + "', '" + barberShop.getPlaces_id() + "', "
+									+ barberShop.getGender() + ") RETURNING id");
 
 					rs.next();
 
@@ -199,7 +200,7 @@ public class BarberShopController {
 								+ barberShop.getTelephone() + "\', name = \'" + barberShop.getName() + "\', address = '"
 								+ barberShop.getAddress() + "', city = '" + barberShop.getCity() + "', description = '"
 								+ barberShop.getDescription() + "', places_id = '" + barberShop.getPlaces_id()
-								+ "' WHERE id = " + barberShop.getId());
+								+ "', gender = " + barberShop.getGender() + " WHERE id = " + barberShop.getId());
 					}
 
 					connection.close();

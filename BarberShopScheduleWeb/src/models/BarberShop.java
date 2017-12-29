@@ -12,6 +12,7 @@ public class BarberShop {
 	private String description;
 	private String places_id;
 	private int gender;
+	private String token;
 	
 	public BarberShop(int id, String password, String email, String telephone, String name, String address,
 			String city, String description, String places_id, int gender) {
@@ -110,5 +111,13 @@ public class BarberShop {
 
 	public void setGender(int gender) {
 		this.gender = gender;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

@@ -16,6 +16,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import models.BarberShop;
+import models.Client;
 import models.Session;
 
 @RequestScoped
@@ -26,9 +28,11 @@ public class SessionController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/login/{id}")
-	public String Login(@PathParam("id") int id) {
+	@Path("/login/{username}/{password}")
+	public Object Login(@PathParam("username") String username, @PathParam("password") String password) {
 
+		Object objToReturn = null;
+		ResultSet rs;
 		String token = "";
 
 		String strEstat = new String("ok");
@@ -44,17 +48,45 @@ public class SessionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE id = " + id);
+					
+					rs = stm.executeQuery("SELECT * FROM barbershop WHERE name = '" + username + "' AND password = '"
+							+ password + "'");
 
 					if (rs.next()) {
-						Session session = new Session(rs.getInt(1), rs.getString(2));
-						token = session.getToken();
+
+						token = Session.generateToken();
+
+						BarberShop barber_shop = new BarberShop(rs.getInt(1), rs.getString(2), rs.getString(3),
+								rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8),
+								rs.getString(9), rs.getInt(10));
+
+						barber_shop.setToken(token);
+
+						stm.executeUpdate("DELETE FROM session WHERE username = '" + username + "'");
+						
+						stm.executeUpdate("INSERT INTO session VALUES ( '" + username + "', '" + token + "' )");
+						objToReturn = barber_shop;
 					}
 
 					else {
 
-						token = Session.generateToken();
-						stm.executeUpdate("INSERT INTO session VALUES ( " + id + ", '" + token + "' )");
+						rs = stm.executeQuery("SELECT * FROM client WHERE name = '" + username + "' AND password = '"
+								+ password + "'");
+
+						if (rs.next()) {
+
+							token = Session.generateToken();
+
+							Client client = new Client(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+									rs.getString(5), rs.getInt(6), rs.getInt(7));
+
+							client.setToken(token);
+
+							stm.executeUpdate("DELETE FROM session WHERE username = '" + username + "'");
+							
+							stm.executeUpdate("INSERT INTO session VALUES ( '" + username + "', '" + token + "' )");
+							objToReturn = client;
+						}
 					}
 
 					connection.close();
@@ -68,12 +100,12 @@ public class SessionController {
 			strEstat = "status ko";
 		}
 
-		return token;
+		return objToReturn;
 	}
-	
+
 	@POST
-	@Path("/logout/{id}/{token}")
-	public Response Logout(@PathParam("id") int id, @PathParam("token") String token) {
+	@Path("/logout/{username}/{token}")
+	public Response Logout(@PathParam("username") String username, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
@@ -88,10 +120,11 @@ public class SessionController {
 
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
-					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE id = " + id + " and session_token = '" + token + "'");
+					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE username = '" + username
+							+ "' and session_token = '" + token + "'");
 
 					if (rs.next()) {
-						stm.executeUpdate("DELETE FROM session WHERE id = " + id);
+						stm.executeUpdate("DELETE FROM session WHERE username = '" + username + "'");
 					}
 
 					connection.close();

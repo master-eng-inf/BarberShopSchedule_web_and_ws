@@ -3,31 +3,34 @@ package models;
 import java.util.UUID;
 
 public class Session {
-	private int id;
+	private String username;
 	private String token;
-	
-	public Session(int id, String token) {
-		this.id = id;
+
+	public Session(String username, String token) {
+		this.username = username;
 		this.token = token;
 	}
-	
+
 	public Session() {
 
 	}
-	
-	public int getId() {
-		return id;
+
+	public String getUsername() {
+		return username;
 	}
-	public void setId(int id) {
-		this.id = id;
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
+
 	public String getToken() {
 		return token;
 	}
+
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
+
 	public static String generateToken() {
 		return UUID.randomUUID().toString().replaceAll("-", "");
 	}
