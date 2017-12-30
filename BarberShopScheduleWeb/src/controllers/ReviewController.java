@@ -73,6 +73,54 @@ public class ReviewController {
 		return review_list;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/barberShop/{barber_shop_id}/client/{client_id}/{token}")
+	public Object getClientReviewForBarberShop(@PathParam("barber_shop_id") int barber_shop_id,
+			@PathParam("client_id") int client_id, @PathParam("token") String token) {
+		Object objToReturn = "{}";
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM review WHERE barber_shop_id = " + barber_shop_id
+								+ " AND client_id = " + client_id);
+
+						if (rs.next()) {
+							objToReturn = new Review(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getDouble(4),
+									rs.getDate(5));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return objToReturn;
+	}
+
 	@POST
 	@Path("/insertReview/{token}")
 	@Consumes("application/json")
