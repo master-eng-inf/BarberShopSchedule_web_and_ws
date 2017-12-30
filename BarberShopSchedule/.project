@@ -3,8 +3,9 @@
 	<name>BarberShopSchedule</name>
 	<comment></comment>
 	<projects>
-		<project>BarberShopScheduleWeb</project>
 		<project>BarberShopScheduleClient</project>
+		<project>BarberShopScheduleWeb</project>
+		<project>BarberShopScheduleWebApp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

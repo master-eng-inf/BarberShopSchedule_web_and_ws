@@ -117,7 +117,7 @@ public class AppointmentController {
 
 		return appointment_list;
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list/client/{id}/{token}")
@@ -163,7 +163,7 @@ public class AppointmentController {
 
 		return appointment_list;
 	}
-	
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/appointment/{id}/{token}")
@@ -212,12 +212,15 @@ public class AppointmentController {
 	}
 
 	@POST
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertAppointment/{token}")
 	@Consumes("application/json")
-	public Response insertAppointment(Appointment appointment, @PathParam("token") String token) {
+	public int insertAppointment(Appointment appointment, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
 
+		int last_inserted_id = -1;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -233,11 +236,15 @@ public class AppointmentController {
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
-						stm.executeUpdate(
-								"INSERT INTO appointment (id, client_id, barber_shop_id, service_id, promotion_id, date) values "
-										+ "(" + appointment.getId() + ", " + appointment.getClient_id() + ", "
-										+ appointment.getBarber_shop_id() + ", " + appointment.getService_id() + ", "
-										+ appointment.getPromotion_id() + ", '" + appointment.getDate() + "')");
+						ResultSet rs = stm.executeQuery(
+								"INSERT INTO appointment (client_id, barber_shop_id, service_id, promotion_id, date) values "
+										+ "(" + appointment.getClient_id() + ", " + appointment.getBarber_shop_id()
+										+ ", " + appointment.getService_id() + ", " + appointment.getPromotion_id()
+										+ ", '" + appointment.getDate() + "') RETURNING id");
+						
+						rs.next();
+
+						last_inserted_id = rs.getInt(1);
 					}
 
 					connection.close();
@@ -251,7 +258,7 @@ public class AppointmentController {
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
 
-		return Response.status(201).entity(strEstat).build();
+		return last_inserted_id;
 	}
 
 	@POST

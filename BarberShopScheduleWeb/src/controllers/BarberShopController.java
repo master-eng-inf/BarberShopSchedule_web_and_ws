@@ -78,6 +78,59 @@ public class BarberShopController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/web-list/")
+	public List<BarberShop> getWebBarberShopList() {
+		ArrayList<BarberShop> barber_shop_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet rs = stm.executeQuery("SELECT * FROM barbershop");
+
+					while (rs.next()) {
+						
+						BarberShop barberShop = new BarberShop();
+						
+						barberShop.setId(rs.getInt(1));
+						barberShop.setEmail(rs.getString(3));
+						barberShop.setTelephone(rs.getString(4));
+						barberShop.setName(rs.getString(5));
+						barberShop.setAddress(rs.getString(6));
+						barberShop.setCity(rs.getString(7));
+						barberShop.setDescription(rs.getString(8));
+						barberShop.setGender(rs.getInt(10));
+						
+						barber_shop_list.add(barberShop);
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return barber_shop_list;
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/barberShop/{id}/{token}")
 	public BarberShop getBarberShop(@PathParam("id") int id, @PathParam("token") String token) {
 

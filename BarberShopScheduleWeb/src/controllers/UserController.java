@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 @Path("users")
 @Produces({ "application/xml", "application/json" })
 @Consumes({ "application/xml", "application/json" })
-public class UsersController {
+public class UserController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
