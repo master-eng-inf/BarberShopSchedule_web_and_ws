@@ -211,6 +211,58 @@ public class PromotionController {
 		return promotion;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/promotion/barberShop/{barber_shop_id}/service/{service_id}/{token}")
+	public Object getBarberShopPromotionForService(@PathParam("barber_shop_id") int barber_shop_id,
+			@PathParam("service_id") int service_id, @PathParam("token") String token) {
+
+		Object objToReturn = null;
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						
+						objToReturn = -1;
+						
+						ResultSet rs = stm.executeQuery("SELECT * FROM promotion WHERE barber_shop_id = "
+								+ barber_shop_id + " AND service_id = " + service_id);
+
+						if (rs.next()) {
+							objToReturn = new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
+									rs.getString(5), rs.getBoolean(6));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return objToReturn;
+	}
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/insertPromotion/{token}")

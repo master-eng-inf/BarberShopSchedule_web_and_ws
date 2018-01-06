@@ -3,7 +3,12 @@ package controllers;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -53,7 +58,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getDate(6)));
+									rs.getInt(5), rs.getString(6)));
 						}
 					}
 
@@ -99,7 +104,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getDate(6)));
+									rs.getInt(5), rs.getString(6)));
 						}
 					}
 
@@ -145,7 +150,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getDate(6)));
+									rs.getInt(5), rs.getString(6)));
 						}
 					}
 
@@ -193,7 +198,7 @@ public class AppointmentController {
 						rs.next();
 
 						appointment = new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-								rs.getInt(5), rs.getDate(6));
+								rs.getInt(5), rs.getString(6));
 					}
 
 					connection.close();
@@ -220,7 +225,7 @@ public class AppointmentController {
 		String strEstat = new String("ok");
 
 		int last_inserted_id = -1;
-		
+
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -233,6 +238,9 @@ public class AppointmentController {
 					Connection connection = ds.getConnection();
 					Statement stm = connection.createStatement();
 
+					String tmp = "Date = " + appointment.getDate();
+					System.out.println(tmp);
+
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
@@ -241,7 +249,7 @@ public class AppointmentController {
 										+ "(" + appointment.getClient_id() + ", " + appointment.getBarber_shop_id()
 										+ ", " + appointment.getService_id() + ", " + appointment.getPromotion_id()
 										+ ", '" + appointment.getDate() + "') RETURNING id");
-						
+
 						rs.next();
 
 						last_inserted_id = rs.getInt(1);

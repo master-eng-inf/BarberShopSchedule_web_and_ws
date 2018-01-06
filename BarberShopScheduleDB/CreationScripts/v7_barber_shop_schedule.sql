@@ -1,0 +1,1 @@
+﻿ALTER TABLE appointment ALTER COLUMN date TYPE TIMESTAMP;

@@ -20,10 +20,10 @@ public class Main {
 
 		// insertClient();
 		// getWebBarberShopLists();
-		insertBarberShop();
+		// insertBarberShop();
 		// deleteClient(token);
 		// updateClient(token);
-		// insertAppointment(token);
+		 insertAppointment(token);
 		// insertService(token);
 		// logout(9, token);
 	}
@@ -92,7 +92,7 @@ public class Main {
 			conn.setRequestProperty("Content-Type", "application/json");
 
 			String input = "{\"client_id\":19,\"barber_shop_id\":3,\"service_id\":4"
-					+ ",\"promotion_id\":-1,\"date\":\"2018-01-26\"}";
+					+ ",\"promotion_id\":-1,\"date\":\"2018-01-26 10:45\"}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());

@@ -227,7 +227,7 @@ public class ReviewController {
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
-						stm.executeUpdate("DELETE FROM review WHERE client_id = " + client_id + " and barber_sop_id = "
+						stm.executeUpdate("DELETE FROM review WHERE client_id = " + client_id + " and barber_shop_id = "
 								+ barber_shop_id);
 					}
 

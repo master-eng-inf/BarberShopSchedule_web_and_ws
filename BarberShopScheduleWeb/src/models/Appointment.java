@@ -1,7 +1,5 @@
 package models;
 
-import java.util.Date;
-
 public class Appointment {
 
 	private int id;
@@ -9,9 +7,9 @@ public class Appointment {
 	private int barber_shop_id;
 	private int service_id;
 	private int promotion_id;
-	private Date date;
+	private String date;
 
-	public Appointment(int id, int client_id, int barber_shop_id, int service_id, int promotion_id, Date date) {
+	public Appointment(int id, int client_id, int barber_shop_id, int service_id, int promotion_id, String date) {
 		this.id = id;
 		this.client_id = client_id;
 		this.barber_shop_id = barber_shop_id;
@@ -65,12 +63,12 @@ public class Appointment {
 		this.promotion_id = promotion_id;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDate(String date) {
+			this.date = date;
 	}
 
 }
