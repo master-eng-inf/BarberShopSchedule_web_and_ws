@@ -79,6 +79,54 @@ public class AppointmentController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/barberShop/{barber_shop_id}/date/{date}/{token}")
+	public List<Appointment> getBarberShopAppointmentListForDate(@PathParam("barber_shop_id") int barber_shop_id,
+			@PathParam("date") String date, @PathParam("token") String token) {
+		ArrayList<Appointment> appointment_list = new ArrayList<>();
+
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE barber_shop_id = "
+								+ barber_shop_id + " and date::text LIKE '" + date + "%'");
+
+						while (rs.next()) {
+							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+									rs.getInt(5), rs.getString(6)));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return appointment_list;
+	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list/barberShop/{id}/{token}")
 	public List<Appointment> getBarberShopAppointmentList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Appointment> appointment_list = new ArrayList<>();

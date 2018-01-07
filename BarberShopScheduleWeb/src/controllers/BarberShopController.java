@@ -99,9 +99,9 @@ public class BarberShopController {
 					ResultSet rs = stm.executeQuery("SELECT * FROM barbershop");
 
 					while (rs.next()) {
-						
+
 						BarberShop barberShop = new BarberShop();
-						
+
 						barberShop.setId(rs.getInt(1));
 						barberShop.setEmail(rs.getString(3));
 						barberShop.setTelephone(rs.getString(4));
@@ -110,7 +110,7 @@ public class BarberShopController {
 						barberShop.setCity(rs.getString(7));
 						barberShop.setDescription(rs.getString(8));
 						barberShop.setGender(rs.getInt(10));
-						
+
 						barber_shop_list.add(barberShop);
 					}
 
@@ -211,6 +211,25 @@ public class BarberShopController {
 					rs.next();
 
 					last_inserted_id = rs.getInt(1);
+
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 0, '9:00', '13:00', '16:00', '20:00', 1)");
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 1, '9:00', '13:00', '16:00', '20:00', 1)");
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 2, '9:00', '13:00', '16:00', '20:00', 1)");
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 3, '9:00', '13:00', '16:00', '20:00', 1)");
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 4, '9:00', '13:00', '16:00', '20:00', 1)");
+					stm.executeUpdate(
+							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
+									+ "(" + last_inserted_id + ", 5, '9:00', '13:00', '16:00', '20:00', 1)");
 
 					connection.close();
 					stm.close();

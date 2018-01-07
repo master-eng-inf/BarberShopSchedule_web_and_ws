@@ -20,10 +20,10 @@ public class Main {
 
 		// insertClient();
 		// getWebBarberShopLists();
-		// insertBarberShop();
+		 insertBarberShop();
 		// deleteClient(token);
 		// updateClient(token);
-		 insertAppointment(token);
+		// insertAppointment(token);
 		// insertService(token);
 		// logout(9, token);
 	}
@@ -219,14 +219,14 @@ public class Main {
 		try {
 
 			URL url = new URL(
-					"http://82.223.24.126:28080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/insertBarberShop");
+					"http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/insertBarberShop");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 
-			String input = "{\"password\":\"password\",\"email\":\"perruqueria1@gmail.com\",\"telephone\":\"973788156\""
-					+ ",\"name\":\"Perruqueria de prova 2\",\"address\":\"Carrer Prat de la Riba 108\",\"city\":\"Lleida\",\"description\":\"Perruqueria de prova del carrer Prat de la Riba 108, Perruqueria de prova del carrer Prat de la Riba 108\",\"places_id\":\"placeId\",\"gender\":1}";
+			String input = "{\"password\":\"pass\",\"email\":\"perruqueria1@gmail.com\",\"telephone\":\"973788156\""
+					+ ",\"name\":\"Perruqueria de prova 5\",\"address\":\"Carrer Prat de la Riba 108\",\"city\":\"Lleida\",\"description\":\"Perruqueria de prova del carrer Prat de la Riba 108, Perruqueria de prova del carrer Prat de la Riba 108\",\"places_id\":\"placeId\",\"gender\":1}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());

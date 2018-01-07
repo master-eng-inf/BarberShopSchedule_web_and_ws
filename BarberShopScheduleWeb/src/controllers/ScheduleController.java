@@ -72,6 +72,55 @@ public class ScheduleController {
 		return schedule_list;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/barberShop/{id}/dayOfWeek/{day_of_week}/{token}")
+	public Object getBarberShopScheduleForSpecificDay(@PathParam("id") int id,
+			@PathParam("day_of_week") int day_of_week, @PathParam("token") String token) {
+		Object objToReturn = "{}";
+			
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM schedule WHERE barber_shop_id = " + id
+								+ " and day_of_week = " + day_of_week);
+
+						if(rs.next())
+						{
+							objToReturn = new Schedule(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4),
+									rs.getString(5), rs.getString(6), rs.getInt(7));
+						}
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		}
+
+		return objToReturn;
+	}
+
 	@POST
 	@Path("/insertSchedule/{token}")
 	@Consumes("application/json")
