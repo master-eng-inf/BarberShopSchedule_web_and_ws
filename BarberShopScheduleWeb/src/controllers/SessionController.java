@@ -103,6 +103,47 @@ public class SessionController {
 		return objToReturn;
 	}
 
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/checkUserSession/{username}/{token}")
+	public Object CheckUserSession(@PathParam("username") String username, @PathParam("token") String token) {
+
+		Object objToReturn = false;
+		
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					Connection connection = ds.getConnection();
+					Statement stm = connection.createStatement();
+					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE username = '" + username
+							+ "' and session_token = '" + token + "'");
+
+					if (rs.next()) {
+						objToReturn = true;
+					}
+
+					connection.close();
+					stm.close();
+				}
+			}
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko due to " + e.getMessage();
+		}
+
+		return objToReturn;
+	}
+	
 	@POST
 	@Path("/logout/{username}/{token}")
 	public Response Logout(@PathParam("username") String username, @PathParam("token") String token) {

@@ -10,7 +10,7 @@ public class Schedule {
 	private String closing_2;
 	private int appointments_at_same_time;
 
-	public Schedule(int barber_shop_id, int day_of_week, String opening_1, String opening_2, String closing_1,
+	public Schedule(int barber_shop_id, int day_of_week, String opening_1, String closing_1, String opening_2,
 			String closing_2, int appointments_at_same_time) {
 		this.barber_shop_id = barber_shop_id;
 		this.day_of_week = day_of_week;
