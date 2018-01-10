@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,8 @@ public class ClientController {
 	@Path("/list/{token}")
 	public List<Client> getClientList(@PathParam("token") String token) {
 		ArrayList<Client> clients_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -43,8 +45,8 @@ public class ClientController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -56,9 +58,6 @@ public class ClientController {
 									rs.getString(5), rs.getInt(6), rs.getInt(7)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -67,7 +66,21 @@ public class ClientController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return clients_list;
 	}
 
@@ -77,7 +90,8 @@ public class ClientController {
 	public Client getClient(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Client client = null;
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -89,8 +103,8 @@ public class ClientController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -103,9 +117,6 @@ public class ClientController {
 								rs.getString(5), rs.getInt(6), rs.getInt(7));
 
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -114,7 +125,21 @@ public class ClientController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return client;
 	}
 
@@ -123,7 +148,8 @@ public class ClientController {
 	@Path("/insertClient")
 	@Consumes("application/json")
 	public int insertClient(Client client) {
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		int last_inserted_id = -1;
@@ -137,8 +163,8 @@ public class ClientController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet rs = stm.executeQuery("INSERT INTO client (password, email, telephone, name, gender, age) values "
 							+ "('" + client.getPassword() + "','" + client.getEmail() + "','"
@@ -148,9 +174,6 @@ public class ClientController {
 					rs.next();
 					
 					last_inserted_id = rs.getInt(1);
-					
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -159,7 +182,21 @@ public class ClientController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return last_inserted_id;
 	}
 
@@ -169,7 +206,9 @@ public class ClientController {
 	public Response updateClient(Client client, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -179,8 +218,8 @@ public class ClientController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -190,9 +229,6 @@ public class ClientController {
 								+ client.getName() + "\', gender = " + client.getGender() + ", age = " + client.getAge()
 								+ " WHERE id = " + client.getId());
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -201,14 +237,29 @@ public class ClientController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
 	@POST
 	@Path("/deleteClient/{id}/{token}")
 	public Response deleteClient(@PathParam("id") int id, @PathParam("token") String token) {
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -220,17 +271,14 @@ public class ClientController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
 						stm.executeUpdate("DELETE FROM client WHERE id = " + id);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -239,7 +287,21 @@ public class ClientController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

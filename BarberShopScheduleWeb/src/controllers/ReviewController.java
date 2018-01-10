@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,8 @@ public class ReviewController {
 	@Path("/barberShop/{id}/list/{token}")
 	public List<Review> getBarberShopReviewList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Review> review_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -44,8 +46,8 @@ public class ReviewController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -57,9 +59,6 @@ public class ReviewController {
 									rs.getDate(5)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -69,7 +68,21 @@ public class ReviewController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return review_list;
 	}
 
@@ -79,7 +92,8 @@ public class ReviewController {
 	public Object getClientReviewForBarberShop(@PathParam("barber_shop_id") int barber_shop_id,
 			@PathParam("client_id") int client_id, @PathParam("token") String token) {
 		Object objToReturn = "{}";
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -91,8 +105,8 @@ public class ReviewController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -105,9 +119,6 @@ public class ReviewController {
 									rs.getDate(5));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -117,7 +128,21 @@ public class ReviewController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return objToReturn;
 	}
 
@@ -127,7 +152,9 @@ public class ReviewController {
 	public Response insertReview(Review review, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -137,8 +164,8 @@ public class ReviewController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -149,9 +176,6 @@ public class ReviewController {
 										+ review.getDescription() + "'," + review.getMark() + ", '" + review.getDate()
 										+ "')");
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -160,7 +184,21 @@ public class ReviewController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -170,7 +208,9 @@ public class ReviewController {
 	public Response updateReview(Review review, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -180,8 +220,8 @@ public class ReviewController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -190,9 +230,6 @@ public class ReviewController {
 								+ review.getMark() + ", date = \'" + review.getDate() + "\' WHERE client_id = "
 								+ review.getClient_id() + " and barber_shop_id = " + review.getBarber_shop_id());
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -201,7 +238,21 @@ public class ReviewController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -209,7 +260,8 @@ public class ReviewController {
 	@Path("/deleteReview/client_id/{client_id}/barber_shop_id/{barber_shop_id}/{token}")
 	public Response deleteReview(@PathParam("client_id") int client_id, @PathParam("barber_shop_id") int barber_shop_id,
 			@PathParam("token") String token) {
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -221,8 +273,8 @@ public class ReviewController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -230,9 +282,6 @@ public class ReviewController {
 						stm.executeUpdate("DELETE FROM review WHERE client_id = " + client_id + " and barber_shop_id = "
 								+ barber_shop_id);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -241,7 +290,21 @@ public class ReviewController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

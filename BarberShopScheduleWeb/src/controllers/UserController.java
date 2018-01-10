@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.enterprise.context.RequestScoped;
@@ -28,7 +29,9 @@ public class UserController {
 		boolean isAvailable = true;
 		ResultSet rs;
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -38,8 +41,8 @@ public class UserController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					rs = stm.executeQuery("SELECT * FROM barbershop WHERE name = '" + username + "'");
 
@@ -54,9 +57,6 @@ public class UserController {
 							isAvailable = false;
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -66,7 +66,21 @@ public class UserController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return isAvailable;
 	}
 }

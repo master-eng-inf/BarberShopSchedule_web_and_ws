@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,8 @@ public class PromotionController {
 	@Path("/list/{token}")
 	public List<Promotion> getPromotionList(@PathParam("token") String token) {
 		ArrayList<Promotion> promotion_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -43,8 +45,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -56,9 +58,6 @@ public class PromotionController {
 									rs.getString(5), rs.getBoolean(6)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -68,7 +67,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return promotion_list;
 	}
 
@@ -77,7 +90,8 @@ public class PromotionController {
 	@Path("/promotional/list/{token}")
 	public List<Promotion> getPromotionalPromotionList(@PathParam("token") String token) {
 		ArrayList<Promotion> promotion_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -89,8 +103,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -102,9 +116,6 @@ public class PromotionController {
 									rs.getString(5), rs.getBoolean(6)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -114,7 +125,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return promotion_list;
 	}
 
@@ -123,7 +148,8 @@ public class PromotionController {
 	@Path("/list/barberShop/{id}/{token}")
 	public List<Promotion> getBarberShopPromotionList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Promotion> promotion_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -135,8 +161,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -148,9 +174,6 @@ public class PromotionController {
 									rs.getString(5), rs.getBoolean(6)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -160,7 +183,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return promotion_list;
 	}
 
@@ -170,7 +207,8 @@ public class PromotionController {
 	public Promotion getPromotion(@PathParam("id") int id, @PathParam("token") String token) {
 
 		Promotion promotion = null;
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -182,8 +220,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -195,9 +233,6 @@ public class PromotionController {
 						promotion = new Promotion(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getString(4),
 								rs.getString(5), rs.getBoolean(6));
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -207,7 +242,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return promotion;
 	}
 
@@ -218,7 +267,8 @@ public class PromotionController {
 			@PathParam("service_id") int service_id, @PathParam("token") String token) {
 
 		Object objToReturn = null;
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -230,8 +280,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -247,9 +297,6 @@ public class PromotionController {
 									rs.getString(5), rs.getBoolean(6));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -259,7 +306,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return objToReturn;
 	}
 
@@ -270,7 +331,8 @@ public class PromotionController {
 	public int insertPromotion(Promotion promotion, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
 		int last_inserted_id = -1;
 
 		try {
@@ -282,8 +344,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -298,9 +360,6 @@ public class PromotionController {
 
 						last_inserted_id = rs.getInt(1);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -309,7 +368,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return last_inserted_id;
 	}
 
@@ -319,7 +392,9 @@ public class PromotionController {
 	public Response updatePromotion(Promotion promotion, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -329,8 +404,8 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -341,9 +416,6 @@ public class PromotionController {
 										+ ", description = '" + promotion.getDescription() + "', is_promotional = "
 										+ promotion.isIs_promotional() + " WHERE id = " + promotion.getId());
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -352,7 +424,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -361,7 +447,9 @@ public class PromotionController {
 	public Response deletePromotion(@PathParam("id") int id, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -371,17 +459,15 @@ public class PromotionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
+						stm.executeUpdate("DELETE FROM appointment WHERE service_id = " + id);
 						stm.executeUpdate("DELETE FROM promotion WHERE id = " + id);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -390,7 +476,21 @@ public class PromotionController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

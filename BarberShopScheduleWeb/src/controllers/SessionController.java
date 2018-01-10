@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.enterprise.context.RequestScoped;
@@ -34,7 +35,8 @@ public class SessionController {
 		Object objToReturn = null;
 		ResultSet rs;
 		String token = "";
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -46,8 +48,8 @@ public class SessionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 					
 					rs = stm.executeQuery("SELECT * FROM barbershop WHERE name = '" + username + "' AND password = '"
 							+ password + "'");
@@ -88,9 +90,6 @@ public class SessionController {
 							objToReturn = client;
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -99,7 +98,21 @@ public class SessionController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return objToReturn;
 	}
 
@@ -109,7 +122,8 @@ public class SessionController {
 	public Object CheckUserSession(@PathParam("username") String username, @PathParam("token") String token) {
 
 		Object objToReturn = false;
-		
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -121,17 +135,15 @@ public class SessionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
+					
 					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE username = '" + username
 							+ "' and session_token = '" + token + "'");
 
 					if (rs.next()) {
 						objToReturn = true;
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -140,7 +152,21 @@ public class SessionController {
 			e.printStackTrace();
 			strEstat = "status ko due to " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return objToReturn;
 	}
 	
@@ -149,7 +175,9 @@ public class SessionController {
 	public Response Logout(@PathParam("username") String username, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -159,17 +187,15 @@ public class SessionController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
+					
 					ResultSet rs = stm.executeQuery("SELECT * FROM session WHERE username = '" + username
 							+ "' and session_token = '" + token + "'");
 
 					if (rs.next()) {
 						stm.executeUpdate("DELETE FROM session WHERE username = '" + username + "'");
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -178,7 +204,21 @@ public class SessionController {
 			e.printStackTrace();
 			strEstat = "status ko due to " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

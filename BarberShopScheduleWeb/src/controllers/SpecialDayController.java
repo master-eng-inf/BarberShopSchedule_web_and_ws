@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +33,8 @@ public class SpecialDayController {
 	@Path("/barberShop/{id}/list/{token}")
 	public List<SpecialDay> getBarberShopSpecialDayList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<SpecialDay> specialDay_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -44,8 +46,8 @@ public class SpecialDayController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -56,9 +58,6 @@ public class SpecialDayController {
 							specialDay_list.add(new SpecialDay(rs.getInt(1), rs.getDate(2), rs.getInt(3)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -68,7 +67,21 @@ public class SpecialDayController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return specialDay_list;
 	}
 
@@ -78,7 +91,9 @@ public class SpecialDayController {
 	public Response insertSpecialDay(SpecialDay specialDay, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -88,8 +103,8 @@ public class SpecialDayController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -98,9 +113,6 @@ public class SpecialDayController {
 								+ specialDay.getBarber_shop_id() + ", '" + specialDay.getDate() + "', "
 								+ specialDay.getType() + ")");
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -109,7 +121,21 @@ public class SpecialDayController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -119,7 +145,9 @@ public class SpecialDayController {
 	public Response updateSpecialDay(SpecialDay specialDay, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -129,8 +157,8 @@ public class SpecialDayController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -139,9 +167,6 @@ public class SpecialDayController {
 								+ " WHERE barbser_shop_id = " + specialDay.getBarber_shop_id() + " and date = '"
 								+ specialDay.getDate() + "'");
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -150,7 +175,21 @@ public class SpecialDayController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -160,7 +199,9 @@ public class SpecialDayController {
 			@PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -170,8 +211,8 @@ public class SpecialDayController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -179,9 +220,6 @@ public class SpecialDayController {
 						stm.executeUpdate("DELETE FROM specialday WHERE barber_shop_id = " + barber_shop_id
 								+ " and date = '" + date + "'");
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -190,7 +228,21 @@ public class SpecialDayController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,8 @@ public class BarberShopController {
 	@Path("/list/{token}")
 	public List<BarberShop> getBarberShopList(@PathParam("token") String token) {
 		ArrayList<BarberShop> barber_shop_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -46,8 +48,8 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -60,9 +62,6 @@ public class BarberShopController {
 									rs.getString(9), rs.getInt(10)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -72,7 +71,21 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return barber_shop_list;
 	}
 
@@ -81,7 +94,8 @@ public class BarberShopController {
 	@Path("/web-list/")
 	public List<BarberShop> getWebBarberShopList() {
 		ArrayList<BarberShop> barber_shop_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -93,8 +107,8 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet rs = stm.executeQuery("SELECT * FROM barbershop");
 
@@ -113,9 +127,6 @@ public class BarberShopController {
 
 						barber_shop_list.add(barberShop);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -125,7 +136,21 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return barber_shop_list;
 	}
 
@@ -135,7 +160,8 @@ public class BarberShopController {
 	public BarberShop getBarberShop(@PathParam("id") int id, @PathParam("token") String token) {
 
 		BarberShop barber_shop = null;
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -147,8 +173,8 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -162,9 +188,6 @@ public class BarberShopController {
 								rs.getInt(10));
 
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -174,7 +197,21 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return barber_shop;
 	}
 
@@ -185,7 +222,8 @@ public class BarberShopController {
 	public int insertBarberShop(BarberShop barberShop) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
 		int last_inserted_id = -1;
 
 		try {
@@ -197,8 +235,8 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet rs = stm.executeQuery(
 							"INSERT INTO barbershop (password, email, telephone, name, address, city, description, places_id, gender) values "
@@ -230,9 +268,6 @@ public class BarberShopController {
 					stm.executeUpdate(
 							"INSERT INTO schedule (barber_shop_id, day_of_week, opening_1, closing_1, opening_2, closing_2, appointments_at_same_time) values "
 									+ "(" + last_inserted_id + ", 5, '9:00', '13:00', '16:00', '20:00', 1)");
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -241,7 +276,21 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return last_inserted_id;
 	}
 
@@ -249,7 +298,8 @@ public class BarberShopController {
 	@Path("/updateBarberShop/{token}")
 	@Consumes("application/json")
 	public Response updateBarberShop(BarberShop barberShop, @PathParam("token") String token) {
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -261,8 +311,8 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -274,9 +324,6 @@ public class BarberShopController {
 								+ barberShop.getDescription() + "', places_id = '" + barberShop.getPlaces_id()
 								+ "', gender = " + barberShop.getGender() + " WHERE id = " + barberShop.getId());
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -285,14 +332,29 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
 	@POST
 	@Path("/deleteBarberShop/{id}/{token}")
 	public Response deleteBarberShop(@PathParam("id") int id, @PathParam("token") String token) {
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -304,17 +366,14 @@ public class BarberShopController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
 					if (session.next()) {
 						stm.executeUpdate("DELETE FROM barberShop WHERE id = " + id);
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -323,7 +382,21 @@ public class BarberShopController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }

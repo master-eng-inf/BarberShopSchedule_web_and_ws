@@ -2,6 +2,7 @@ package controllers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,8 @@ public class ScheduleController {
 	@Path("/barberShop/{id}/list/{token}")
 	public List<Schedule> getBarberShopScheduleList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Schedule> schedule_list = new ArrayList<>();
-
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -43,8 +45,8 @@ public class ScheduleController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -56,9 +58,6 @@ public class ScheduleController {
 									rs.getString(5), rs.getString(6), rs.getInt(7)));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -68,7 +67,21 @@ public class ScheduleController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return schedule_list;
 	}
 
@@ -78,7 +91,8 @@ public class ScheduleController {
 	public Object getBarberShopScheduleForSpecificDay(@PathParam("id") int id,
 			@PathParam("day_of_week") int day_of_week, @PathParam("token") String token) {
 		Object objToReturn = "{}";
-			
+		Connection connection = null;
+		Statement stm = null;	
 		String strEstat = new String("ok");
 
 		try {
@@ -90,8 +104,8 @@ public class ScheduleController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -105,9 +119,6 @@ public class ScheduleController {
 									rs.getString(5), rs.getString(6), rs.getInt(7));
 						}
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 
@@ -117,7 +128,21 @@ public class ScheduleController {
 			e.printStackTrace();
 			strEstat = "status ko";
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return objToReturn;
 	}
 
@@ -127,7 +152,9 @@ public class ScheduleController {
 	public Response insertSchedule(Schedule schedule, @PathParam("token") String token) {
 
 		String strEstat = new String("ok");
-
+		Connection connection = null;
+		Statement stm = null;
+		
 		try {
 			InitialContext cxt = new InitialContext();
 			if (cxt != null) {
@@ -137,8 +164,8 @@ public class ScheduleController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -151,9 +178,6 @@ public class ScheduleController {
 										+ schedule.getAppointments_at_same_time() + ")");
 
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -162,7 +186,21 @@ public class ScheduleController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 
@@ -171,6 +209,8 @@ public class ScheduleController {
 	@Consumes("application/json")
 	public Response updateSchedule(Schedule schedule, @PathParam("token") String token) {
 
+		Connection connection = null;
+		Statement stm = null;
 		String strEstat = new String("ok");
 
 		try {
@@ -182,8 +222,8 @@ public class ScheduleController {
 					strEstat = "Error al crear el datasource";
 				else {
 
-					Connection connection = ds.getConnection();
-					Statement stm = connection.createStatement();
+					connection = ds.getConnection();
+					stm = connection.createStatement();
 
 					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
 
@@ -195,9 +235,6 @@ public class ScheduleController {
 								+ " WHERE barber_shop_id = " + schedule.getBarber_shop_id() + " and day_of_week = "
 								+ schedule.getDay_of_week());
 					}
-
-					connection.close();
-					stm.close();
 				}
 			}
 		}
@@ -206,7 +243,21 @@ public class ScheduleController {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
 		}
+		finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
 
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return Response.status(201).entity(strEstat).build();
 	}
 }
