@@ -209,6 +209,63 @@ public class AppointmentController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/list/pending/barberShop/{id}/{token}")
+	public List<Appointment> getBarberShopPendingAppointmentList(@PathParam("id") int id, @PathParam("token") String token) {
+		ArrayList<Appointment> appointment_list = new ArrayList<>();
+		Connection connection = null;
+		Statement stm = null;
+		String strEstat = new String("ok");
+
+		try {
+			InitialContext cxt = new InitialContext();
+			if (cxt != null) {
+				DataSource ds = (DataSource) cxt.lookup("java:jboss/PostgresXA");
+
+				if (ds == null)
+					strEstat = "Error al crear el datasource";
+				else {
+
+					connection = ds.getConnection();
+					stm = connection.createStatement();
+
+					ResultSet session = stm.executeQuery("SELECT * FROM session WHERE session_token = '" + token + "'");
+
+					if (session.next()) {
+						ResultSet rs = stm.executeQuery("SELECT * FROM appointment WHERE barber_shop_id = " + id + " AND pendingconfirmation = 1");
+
+						while (rs.next()) {
+							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+									rs.getInt(5), rs.getString(6), rs.getInt(7)));
+						}
+					}
+				}
+			}
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+			strEstat = "status ko";
+		} finally {
+			try {
+				if (connection != null) {
+					connection.close();
+				}
+
+				if (stm != null) {
+					stm.close();
+				}
+			}
+
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return appointment_list;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list/client/{id}/{token}")
 	public List<Appointment> getClientAppointmentList(@PathParam("id") int id, @PathParam("token") String token) {
 		ArrayList<Appointment> appointment_list = new ArrayList<>();

@@ -75,7 +75,8 @@ public class NotificationController {
 									conn.setDoOutput(true);
 									conn.setRequestMethod("POST");
 									conn.setRequestProperty("Content-Type", "application/json");
-									conn.setRequestProperty("Authorization", "server_token");
+									conn.setRequestProperty("Authorization",
+											"server_token");
 
 									String input = "{\"to\":\"" + deviceToken
 											+ "\", \"data\":{\"type\" : \"cancel\", \"service\" : \"Kid haircut\", \"time\" : \"2018-01-11 15:20\" }}";
@@ -175,7 +176,8 @@ public class NotificationController {
 									conn.setDoOutput(true);
 									conn.setRequestMethod("POST");
 									conn.setRequestProperty("Content-Type", "application/json");
-									conn.setRequestProperty("Authorization", "server_token");
+									conn.setRequestProperty("Authorization",
+											"server_token");
 
 									String input = "{\"to\":\"" + deviceToken
 											+ "\", \"data\":{\"type\" : \"request\", \"service\" : \"Kid haircut\", \"time\" : \"2018-01-11 15:20\" }}";

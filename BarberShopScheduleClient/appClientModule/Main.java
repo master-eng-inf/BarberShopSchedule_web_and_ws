@@ -29,18 +29,20 @@ public class Main {
 		createNotification();
 	}
 
-	private static void createNotification() {
+	private static void createNotification()
+	{
 		try {
 
 			String deviceToken = "device_token";
-
+			
 			URL url = new URL("https://fcm.googleapis.com/fcm/send");
 
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
-			conn.setRequestProperty("Authorization", "server_token");
+			conn.setRequestProperty("Authorization",
+					"server_token");
 
 			String input = "{\"to\":\"" + deviceToken
 					+ "\", \"data\":{\"type\" : \"request\", \"service\" : \"Kid haircut\", \"time\" : \"2018-01-11 15:20\" }}";
@@ -49,7 +51,8 @@ public class Main {
 			os.write(input.getBytes());
 			os.flush();
 
-			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+			BufferedReader br = new BufferedReader(
+					new InputStreamReader((conn.getInputStream())));
 
 			String output;
 			while ((output = br.readLine()) != null) {
@@ -64,7 +67,7 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private static void getWebBarberShopLists() {
 		try {
 			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/web-list");
