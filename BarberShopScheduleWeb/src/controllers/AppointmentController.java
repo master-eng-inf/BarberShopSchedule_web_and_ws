@@ -60,7 +60,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getString(6)));
+									rs.getInt(5), rs.getString(6), rs.getInt(7)));
 						}
 					}
 				}
@@ -121,7 +121,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getString(6)));
+									rs.getInt(5), rs.getString(6), rs.getInt(7)));
 						}
 					}
 				}
@@ -132,8 +132,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko";
-		} 
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
@@ -179,7 +178,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getString(6)));
+									rs.getInt(5), rs.getString(6), rs.getInt(7)));
 						}
 					}
 				}
@@ -190,8 +189,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko";
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
@@ -237,7 +235,7 @@ public class AppointmentController {
 
 						while (rs.next()) {
 							appointment_list.add(new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-									rs.getInt(5), rs.getString(6)));
+									rs.getInt(5), rs.getString(6), rs.getInt(7)));
 						}
 					}
 				}
@@ -248,8 +246,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko";
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
@@ -297,7 +294,7 @@ public class AppointmentController {
 						rs.next();
 
 						appointment = new Appointment(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
-								rs.getInt(5), rs.getString(6));
+								rs.getInt(5), rs.getString(6), rs.getInt(7));
 					}
 				}
 			}
@@ -307,8 +304,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko";
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
@@ -353,10 +349,11 @@ public class AppointmentController {
 
 					if (session.next()) {
 						ResultSet rs = stm.executeQuery(
-								"INSERT INTO appointment (client_id, barber_shop_id, service_id, promotion_id, date) values "
+								"INSERT INTO appointment (client_id, barber_shop_id, service_id, promotion_id, date, pendingconfirmation) values "
 										+ "(" + appointment.getClient_id() + ", " + appointment.getBarber_shop_id()
 										+ ", " + appointment.getService_id() + ", " + appointment.getPromotion_id()
-										+ ", '" + appointment.getDate() + "') RETURNING id");
+										+ ", '" + appointment.getDate() + "', " + appointment.getPending_confirmation()
+										+ ") RETURNING id");
 
 						rs.next();
 
@@ -369,8 +366,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();
@@ -419,8 +415,7 @@ public class AppointmentController {
 		catch (Exception e) {
 			e.printStackTrace();
 			strEstat = "status ko due to -> " + e.getMessage();
-		}
-		finally {
+		} finally {
 			try {
 				if (connection != null) {
 					connection.close();

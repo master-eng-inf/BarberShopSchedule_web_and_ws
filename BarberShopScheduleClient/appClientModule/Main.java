@@ -20,12 +20,49 @@ public class Main {
 
 		// insertClient();
 		// getWebBarberShopLists();
-		 insertBarberShop();
+		// insertBarberShop();
 		// deleteClient(token);
 		// updateClient(token);
 		// insertAppointment(token);
 		// insertService(token);
 		// logout(9, token);
+		createNotification();
+	}
+
+	private static void createNotification() {
+		try {
+
+			String deviceToken = "device_token";
+
+			URL url = new URL("https://fcm.googleapis.com/fcm/send");
+
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Content-Type", "application/json");
+			conn.setRequestProperty("Authorization", "server_token");
+
+			String input = "{\"to\":\"" + deviceToken
+					+ "\", \"data\":{\"type\" : \"request\", \"service\" : \"Kid haircut\", \"time\" : \"2018-01-11 15:20\" }}";
+
+			OutputStream os = conn.getOutputStream();
+			os.write(input.getBytes());
+			os.flush();
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Answer: " + output);
+			}
+
+			conn.disconnect();
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void getWebBarberShopLists() {
@@ -92,7 +129,7 @@ public class Main {
 			conn.setRequestProperty("Content-Type", "application/json");
 
 			String input = "{\"client_id\":19,\"barber_shop_id\":3,\"service_id\":4"
-					+ ",\"promotion_id\":-1,\"date\":\"2018-01-26 10:45\"}";
+					+ ",\"promotion_id\":-1,\"date\":\"2018-01-26 10:45\",\"pending_confirmation\":1}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
@@ -219,14 +256,14 @@ public class Main {
 		try {
 
 			URL url = new URL(
-					"http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/insertBarberShop");
+					"http://82.223.24.126:28080/BarberShopScheduleWeb/barberShopScheduleAPI/barberShops/insertBarberShop");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
 			conn.setRequestProperty("Content-Type", "application/json");
 
 			String input = "{\"password\":\"pass\",\"email\":\"perruqueria1@gmail.com\",\"telephone\":\"973788156\""
-					+ ",\"name\":\"Perruqueria de prova 5\",\"address\":\"Carrer Prat de la Riba 108\",\"city\":\"Lleida\",\"description\":\"Perruqueria de prova del carrer Prat de la Riba 108, Perruqueria de prova del carrer Prat de la Riba 108\",\"places_id\":\"placeId\",\"gender\":1}";
+					+ ",\"name\":\"Perruqueria de prova 6\",\"address\":\"Carrer Prat de la Riba 108\",\"city\":\"Lleida\",\"description\":\"Perruqueria de prova del carrer Prat de la Riba 108, Perruqueria de prova del carrer Prat de la Riba 108\",\"places_id\":\"placeId\",\"gender\":1}";
 
 			OutputStream os = conn.getOutputStream();
 			os.write(input.getBytes());
