@@ -59,11 +59,16 @@ public class NotificationController {
 
 					if (session.next()) {
 
-						ResultSet appointment_rs = stm.executeQuery("SELECT * appointment WHERE id = " + id);
+						ResultSet appointment_rs = stm.executeQuery("SELECT * FROM appointment WHERE id = " + id);
 
 						if (appointment_rs.next()) {
+							
+							int clientId = appointment_rs.getInt(2);
+							int serviceId = appointment_rs.getInt(4);
+							String appointmentTime = appointment_rs.getString(6);
+							
 							ResultSet client_rs = stm
-									.executeQuery("SELECT * FROM client WHERE id = " + appointment_rs.getInt(2));
+									.executeQuery("SELECT * FROM client WHERE id = " + clientId);
 
 							if (client_rs.next()) {
 								String deviceToken = client_rs.getString(8);
@@ -71,7 +76,7 @@ public class NotificationController {
 								try {
 
 									ResultSet service_rs = stm.executeQuery(
-											"SELECT * FROM service WHERE id = " + appointment_rs.getInt(4));
+											"SELECT * FROM service WHERE id = " + serviceId);
 
 									if (service_rs.next()) {
 										URL url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -86,7 +91,7 @@ public class NotificationController {
 										String input = "{\"to\":\"" + deviceToken
 												+ "\", \"data\":{\"type\" : \"cancel\", \"service\" : \""
 												+ service_rs.getString(3) + "\", \"time\" : \""
-												+ appointment_rs.getString(6) + "\" }}";
+												+ appointmentTime + "\" }}";
 
 										OutputStream os = conn.getOutputStream();
 										os.write(input.getBytes());
@@ -171,11 +176,16 @@ public class NotificationController {
 
 					if (session.next()) {
 
-						ResultSet appointment_rs = stm.executeQuery("SELECT * appointment WHERE id = " + id);
+						ResultSet appointment_rs = stm.executeQuery("SELECT * FROM appointment WHERE id = " + id);
 
 						if (appointment_rs.next()) {
+							
+							int clientId = appointment_rs.getInt(2);
+							int serviceId = appointment_rs.getInt(4);
+							String appointmentTime = appointment_rs.getString(6);
+							
 							ResultSet client_rs = stm
-									.executeQuery("SELECT * FROM client WHERE id = " + appointment_rs.getInt(2));
+									.executeQuery("SELECT * FROM client WHERE id = " + clientId);
 
 							if (client_rs.next()) {
 								String deviceToken = client_rs.getString(8);
@@ -183,7 +193,7 @@ public class NotificationController {
 								try {
 
 									ResultSet service_rs = stm.executeQuery(
-											"SELECT * FROM service WHERE id = " + appointment_rs.getInt(4));
+											"SELECT * FROM service WHERE id = " + serviceId);
 
 									if (service_rs.next()) {
 										URL url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -198,7 +208,7 @@ public class NotificationController {
 										String input = "{\"to\":\"" + deviceToken
 												+ "\", \"data\":{\"type\" : \"accept\", \"service\" : \""
 												+ service_rs.getString(3) + "\", \"time\" : \""
-												+ appointment_rs.getString(6) + "\" }}";
+												+ appointmentTime + "\" }}";
 
 										OutputStream os = conn.getOutputStream();
 										os.write(input.getBytes());
@@ -283,19 +293,24 @@ public class NotificationController {
 
 					if (session.next()) {
 
-						ResultSet appointment_rs = stm.executeQuery("SELECT * appointment WHERE id = " + id);
+						ResultSet appointment_rs = stm.executeQuery("SELECT * FROM appointment WHERE id = " + id);
 
 						if (appointment_rs.next()) {
-							ResultSet client_rs = stm
-									.executeQuery("SELECT * FROM client WHERE id = " + appointment_rs.getInt(2));
+							
+							int barberShopId = appointment_rs.getInt(3);
+							int serviceId = appointment_rs.getInt(4);
+							String appointmentTime = appointment_rs.getString(6);
+							
+							ResultSet barberShop_rs = stm
+									.executeQuery("SELECT * FROM barbershop WHERE id = " + barberShopId);
 
-							if (client_rs.next()) {
-								String deviceToken = client_rs.getString(8);
+							if (barberShop_rs.next()) {
+								String deviceToken = barberShop_rs.getString(11);
 
 								try {
 
 									ResultSet service_rs = stm.executeQuery(
-											"SELECT * FROM service WHERE id = " + appointment_rs.getInt(4));
+											"SELECT * FROM service WHERE id = " + serviceId);
 
 									if (service_rs.next()) {
 										URL url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -310,7 +325,7 @@ public class NotificationController {
 										String input = "{\"to\":\"" + deviceToken
 												+ "\", \"data\":{\"type\" : \"request\", \"service\" : \""
 												+ service_rs.getString(3) + "\", \"time\" : \""
-												+ appointment_rs.getString(6) + "\" }}";
+												+ appointmentTime + "\" }}";
 
 										OutputStream os = conn.getOutputStream();
 										os.write(input.getBytes());

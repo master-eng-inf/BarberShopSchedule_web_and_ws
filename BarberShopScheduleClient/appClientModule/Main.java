@@ -26,9 +26,63 @@ public class Main {
 		// insertAppointment(token);
 		// insertService(token);
 		// logout(9, token);
-		createNotification();
+		// createNotification();
+		// updateDeviceToken(token);
+		sendPush(token);
 	}
 
+	private static void sendPush(String token)
+	{
+		try {
+
+			URL url = new URL("http://localhost:8080/BarberShopScheduleWeb/barberShopScheduleAPI/notifications/cancelAppointment/14"
+					+ "/" + token);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Answer: " + output);
+			}
+
+			conn.disconnect();
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void updateDeviceToken(String token)
+	{
+		try {
+
+			URL url = new URL("http://82.223.24.126:28080/BarberShopScheduleWeb/barberShopScheduleAPI/users/updateUserDeviceToken/Alex/BlaBlaBlaProva"
+					+ "/" + token);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod("POST");
+
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output;
+			while ((output = br.readLine()) != null) {
+				System.out.println("\nClient POST. Answer: " + output);
+			}
+
+			conn.disconnect();
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private static void createNotification()
 	{
 		try {
